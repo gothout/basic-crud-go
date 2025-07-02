@@ -1,0 +1,25 @@
+# Binaries for the current OS and architecture
+*.exe
+*.dll
+*.so
+*.dylib
+
+# Go build cache
+.go/
+go.work.sum
+
+# Test results
+*.test
+*.out
+
+# IDE specific files
+.idea/
+.vscode/
+*.iml
+.DS_Store # macOS specific
+
+# Dependency vendor directory (if not using Go Modules or if explicitly desired)
+vendor/
+
+# Log files
+*.log
