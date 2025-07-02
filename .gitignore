@@ -1,26 +1,32 @@
-# Binaries for the current OS and architecture
+# If you prefer the allow list template instead of the deny list, see community template:
+# https://github.com/github/gitignore/blob/main/community/Golang/Go.AllowList.gitignore
+#
+# Binaries for programs and plugins
 *.exe
+*.exe~
 *.dll
 *.so
 *.dylib
-*.env
 
-# Go build cache
-.go/
+# Test binary, built with `go test -c`
+*.test
+
+# Code coverage profiles and other test artifacts
+*.out
+coverage.*
+*.coverprofile
+profile.cov
+
+# Dependency directories (remove the comment below to include it)
+# vendor/
+
+# Go workspace file
+go.work
 go.work.sum
 
-# Test results
-*.test
-*.out
+# env file
+.env
 
-# IDE specific files
-.idea/
-.vscode/
-*.iml
-.DS_Store # macOS specific
-
-# Dependency vendor directory (if not using Go Modules or if explicitly desired)
-vendor/
-
-# Log files
-*.log
+# Editor/IDE
+# .idea/
+# .vscode/
