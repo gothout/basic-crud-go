@@ -1,0 +1,34 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "API administrativa generica para um Basic Crud",
+        "title": "Basic Crud",
+        "contact": {},
+        "version": "1.0"
+    },
+    "paths": {
+        "/admin/v1/ping": {
+            "get": {
+                "description": "Retorna um pong para verificar se o serviço admin está ativo",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Admin"
+                ],
+                "summary": "Healthcheck do Admin",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
