@@ -30,6 +30,11 @@ func GetDatabaseName() string {
 	return os.Getenv("DATABASE_NAME")
 }
 
+// GetDatabaseSSL retrieves the DATABASE_SSL environment variable.
+func GetDatabaseSSL() string {
+	return os.Getenv("DATABASE_SSL")
+}
+
 // ValidateDatabaseEnv ensures all required database environment variables are set.
 func ValidateDatabaseEnv() error {
 	if GetDatabaseURL() == "" {
@@ -46,6 +51,9 @@ func ValidateDatabaseEnv() error {
 	}
 	if GetDatabaseName() == "" {
 		return fmt.Errorf("environment variable DATABASE_NAME not set")
+	}
+	if GetDatabaseSSL() != "disable" && GetDatabaseSSL() != "enabled" {
+		return fmt.Errorf("environment variable DATABASE_SSL must be 'disable' or 'enabled'")
 	}
 	return nil
 }
