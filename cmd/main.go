@@ -1,7 +1,10 @@
 package main
 
-import "fmt"
+import (
+	cmdEnv "basic-crud-go/cmd/configuration/env"
+)
 
 func main() {
-	fmt.Println("Projeto nao iniciado!")
+	// Validate envs
+	cmdEnv.ValidateEnvs()
 }

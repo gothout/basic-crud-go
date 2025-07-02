@@ -3,6 +3,7 @@
 *.dll
 *.so
 *.dylib
+*.env
 
 # Go build cache
 .go/
