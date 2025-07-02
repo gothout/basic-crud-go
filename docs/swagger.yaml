@@ -1,0 +1,22 @@
+info:
+  contact: {}
+  description: API administrativa generica para um Basic Crud
+  title: Basic Crud
+  version: "1.0"
+paths:
+  /admin/v1/ping:
+    get:
+      description: Retorna um pong para verificar se o serviço admin está ativo
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Healthcheck do Admin
+      tags:
+      - Admin
+swagger: "2.0"

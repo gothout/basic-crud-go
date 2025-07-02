@@ -27,6 +27,11 @@ go.work.sum
 # env file
 .env
 
+# Ignore everything in certificates except readme.md
+certificates/*
+!certificates/readme.md
+
+
 # Editor/IDE
 # .idea/
 
