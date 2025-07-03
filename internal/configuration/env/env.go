@@ -2,7 +2,7 @@ package env
 
 import (
 	"basic-crud-go/internal/configuration/env/db"
-	envEnvs "basic-crud-go/internal/configuration/env/enviroument"
+	envEnvs "basic-crud-go/internal/configuration/env/environment"
 	logEnvs "basic-crud-go/internal/configuration/env/log"
 	securityEnvs "basic-crud-go/internal/configuration/env/security"
 	serverEnvs "basic-crud-go/internal/configuration/env/server"

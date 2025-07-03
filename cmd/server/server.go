@@ -2,7 +2,7 @@ package server
 
 import (
 	adminHandler "basic-crud-go/internal/app/admin/user/handler"
-	env "basic-crud-go/internal/configuration/env/enviroument"
+	env "basic-crud-go/internal/configuration/env/environment"
 	envServer "basic-crud-go/internal/configuration/env/server"
 	"fmt"
 	"log"
