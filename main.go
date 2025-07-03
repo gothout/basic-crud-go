@@ -5,19 +5,13 @@
 package main
 
 import (
+	"basic-crud-go/cmd/cli"
 	cmdEnv "basic-crud-go/cmd/configuration/env"
-	cmdServer "basic-crud-go/cmd/server"
-	"basic-crud-go/internal/infrastructure/db/postgres"
 )
 
 func main() {
 	// Validate envs
 	cmdEnv.ValidateEnvs()
-
-	// Inicialize connection database
-	postgres.InitPostgres()
-
-	// Inicialize server
-	router := cmdServer.InitServer()
-	cmdServer.StartServer(router)
+	// Handle CLI commands (e.g., --start, --db-create, --db-drop)
+	cli.HandleCLI()
 }
