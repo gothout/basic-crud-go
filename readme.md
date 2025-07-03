@@ -57,3 +57,6 @@ Execute o projeto com o comando abaixo:
 go run main.go
 ```
 A API será exposta em `http://<LISTEN_SERVER>:<HTTP_PORT>` ou HTTPS caso habilitado.
+
+## 📝 Licença
+Este projeto está licenciado sob os termos da [MIT License](LICENSE).
