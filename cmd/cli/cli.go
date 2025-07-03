@@ -47,14 +47,26 @@ func HandleCLI() {
 
 	case "--status":
 		db := postgres.InitPostgres()
-		rows, _ := db.Query(`SELECT filename, applied_at FROM migrations_applied ORDER BY applied_at`)
+		rows, err := db.Query(`SELECT filename, applied_at FROM migrations_applied ORDER BY applied_at`)
+		if err != nil {
+			fmt.Printf("❌ Failed to query migrations: %v\n", err)
+			return
+		}
 		defer rows.Close()
+
 		fmt.Println("📄 Applied migrations:")
 		for rows.Next() {
 			var name string
 			var appliedAt string
-			rows.Scan(&name, &appliedAt)
+			if err := rows.Scan(&name, &appliedAt); err != nil {
+				fmt.Printf("❌ Failed to read migration: %v\n", err)
+				return
+			}
 			fmt.Printf("  ✅ %s at %s\n", name, appliedAt)
+		}
+		if err := rows.Err(); err != nil {
+			fmt.Printf("❌ Rows error: %v\n", err)
+			return
 		}
 
 	case "--help":
