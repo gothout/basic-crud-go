@@ -26,6 +26,10 @@ func HandleCLI() {
 		router := cmdServer.InitServer()
 		cmdServer.StartServer(router)
 
+	case "--db-check":
+		fmt.Println("⏳ Checking database connection...")
+		postgres.InitPostgres()
+
 	case "--db-create":
 		fmt.Println("🔨 Creating database structure...")
 		postgres.InitPostgres()
@@ -65,6 +69,7 @@ func HandleCLI() {
 func printHelp() {
 	fmt.Printf(`📘 Available commands:
   --start             Start the application and run all migrations
+	--db-check          Check connection database
   --db-create         Create all database tables from the migration files
   --db-drop [folder]  Drop tables and remove migration records (e.g., --db-drop 03_middleware)
   --status            Show migrations status
