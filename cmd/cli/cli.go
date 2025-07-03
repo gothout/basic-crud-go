@@ -63,11 +63,11 @@ func HandleCLI() {
 }
 
 func printHelp() {
-	fmt.Println(`📘 Available commands:
-  --start           Start the application and run all migrations
-  --db-create       Create all database tables from the migration files
-  --db-drop [folder] Drop tables and remove migration records (e.g., --db-drop 03_middleware)
-  --status          Show migrations status
-  --help            Show this help message
+	fmt.Printf(`📘 Available commands:
+  --start             Start the application and run all migrations
+  --db-create         Create all database tables from the migration files
+  --db-drop [folder]  Drop tables and remove migration records (e.g., --db-drop 03_middleware)
+  --status            Show migrations status
+  --help              Show this help message
 `)
 }
