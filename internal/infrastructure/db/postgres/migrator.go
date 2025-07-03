@@ -2,8 +2,8 @@ package postgres
 
 import (
 	"io/fs"
-	"io/ioutil"
 	"log"
+	"os"
 	"path/filepath"
 	"sort"
 	"strings"
@@ -57,7 +57,7 @@ func RunMigrations() {
 			continue
 		}
 
-		sqlBytes, err := ioutil.ReadFile(path)
+		sqlBytes, err := os.ReadFile(path)
 		if err != nil {
 			log.Fatalf("❌ Erro ao ler arquivo %s: %v", path, err)
 		}
