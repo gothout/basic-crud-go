@@ -1,4 +1,4 @@
-package admin
+package user
 
 import (
 	controller "basic-crud-go/internal/app/admin/user/controller"

@@ -15,16 +15,39 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/admin/v1/ping": {
+        "/enterprise/v1/ping": {
             "get": {
-                "description": "Retorna um pong para verificar se o serviço admin está ativo",
+                "description": "Retorna um pong para verificar se o serviço enterprise está ativo",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "Admin"
+                    "Enterprise"
                 ],
-                "summary": "Healthcheck do Admin",
+                "summary": "Healthcheck do Enterprise",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/user/v1/ping": {
+            "get": {
+                "description": "Retorna um pong para verificar se o serviço User está ativo",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "Healthcheck do User",
                 "responses": {
                     "200": {
                         "description": "OK",

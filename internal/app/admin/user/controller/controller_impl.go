@@ -18,9 +18,9 @@ func NewUserController(s service.UserService) UserController {
 }
 
 // Ping godoc
-// @Summary      Healthcheck do Admin
-// @Description  Retorna um pong para verificar se o serviço admin está ativo
-// @Tags         Admin
+// @Summary      Healthcheck do User
+// @Description  Retorna um pong para verificar se o serviço User está ativo
+// @Tags         User
 // @Produce      json
 // @Success      200  {object}  map[string]string
 // @Router       /user/v1/ping [get]
