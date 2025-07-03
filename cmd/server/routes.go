@@ -1,11 +1,11 @@
 package server
 
 import (
-	adminHandler "basic-crud-go/internal/app/admin/handler"
+	userHandler "basic-crud-go/internal/app/admin/user/handler"
 
 	"github.com/gin-gonic/gin"
 )
 
 func RegisterRoutes(router *gin.Engine) {
-	adminHandler.RegisterAdminRoutes(router)
+	userHandler.RegisterUserRoutes(router)
 }

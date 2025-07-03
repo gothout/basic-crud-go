@@ -4,6 +4,6 @@ import (
 	"context"
 )
 
-type AdminService interface {
+type UserService interface {
 	Ping(ctx context.Context) (string, error)
 }

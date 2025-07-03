@@ -2,6 +2,6 @@ package controller
 
 import "github.com/gin-gonic/gin"
 
-type AdminController interface {
+type UserController interface {
 	Ping(ctx *gin.Context)
 }

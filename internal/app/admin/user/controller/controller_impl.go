@@ -1,18 +1,18 @@
 package controller
 
 import (
-	"basic-crud-go/internal/app/admin/service"
+	"basic-crud-go/internal/app/admin/user/service"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
 )
 
-type adminController struct {
-	service service.AdminService
+type userController struct {
+	service service.UserService
 }
 
-func NewAdminController(s service.AdminService) AdminController {
-	return &adminController{
+func NewUserController(s service.UserService) UserController {
+	return &userController{
 		service: s,
 	}
 }
@@ -23,8 +23,8 @@ func NewAdminController(s service.AdminService) AdminController {
 // @Tags         Admin
 // @Produce      json
 // @Success      200  {object}  map[string]string
-// @Router       /admin/v1/ping [get]
-func (c *adminController) Ping(ctx *gin.Context) {
+// @Router       /user/v1/ping [get]
+func (c *userController) Ping(ctx *gin.Context) {
 	result, _ := c.service.Ping(ctx.Request.Context())
 
 	ctx.JSON(http.StatusOK, gin.H{

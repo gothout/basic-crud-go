@@ -6,16 +6,16 @@ import (
 	"database/sql"
 )
 
-type adminService struct {
+type userService struct {
 	db *sql.DB
 }
 
-func NewAdminService() AdminService {
-	return &adminService{
+func NewUserService() UserService {
+	return &userService{
 		db: postgres.GetDB(), // busca a instância do banco diretamente
 	}
 }
 
-func (s *adminService) Ping(ctx context.Context) (string, error) {
+func (s *userService) Ping(ctx context.Context) (string, error) {
 	return "pong", nil
 }

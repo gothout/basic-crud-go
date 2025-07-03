@@ -1,7 +1,7 @@
 package server
 
 import (
-	adminHandler "basic-crud-go/internal/app/admin/handler"
+	adminHandler "basic-crud-go/internal/app/admin/user/handler"
 	env "basic-crud-go/internal/configuration/env/enviroument"
 	envServer "basic-crud-go/internal/configuration/env/server"
 	"fmt"
@@ -23,7 +23,7 @@ func InitServer() *gin.Engine {
 	// future -- CORS
 
 	// register handlers
-	adminHandler.RegisterAdminRoutes(router)
+	adminHandler.RegisterUserRoutes(router)
 	return router
 
 }
