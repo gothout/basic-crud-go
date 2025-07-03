@@ -52,8 +52,20 @@ func ValidateDatabaseEnv() error {
 	if GetDatabaseName() == "" {
 		return fmt.Errorf("environment variable DATABASE_NAME not set")
 	}
-	if GetDatabaseSSL() != "disable" && GetDatabaseSSL() != "enabled" {
-		return fmt.Errorf("environment variable DATABASE_SSL must be 'disable' or 'enabled'")
+
+	// Valid values for sslmode
+	validSSL := map[string]bool{
+		"disable":     true,
+		"allow":       true,
+		"prefer":      true,
+		"require":     true,
+		"verify-ca":   true,
+		"verify-full": true,
 	}
+	ssl := GetDatabaseSSL()
+	if !validSSL[ssl] {
+		return fmt.Errorf("invalid DATABASE_SSL: '%s'. Must be one of: disable, allow, prefer, require, verify-ca, verify-full", ssl)
+	}
+
 	return nil
 }
