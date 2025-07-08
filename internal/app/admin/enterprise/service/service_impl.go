@@ -40,3 +40,16 @@ func (s *enterpriseServiceImpl) Create(ctx context.Context, name, cnpj string) (
 
 	return Enterprise, nil
 }
+
+// Read enteprise by cnpj
+func (s *enterpriseServiceImpl) Read(ctx context.Context, cnpj string) (model.Enterprise, error) {
+	Enterprise, err := s.repo.ReadEnterpriseByCNPJ(ctx, cnpj)
+	if err != nil {
+		return model.Enterprise{}, fmt.Errorf("erro ao ler empresa")
+	}
+	if Enterprise.Name == "" {
+		return model.Enterprise{}, fmt.Errorf("empresa nao encontrada")
+	}
+
+	return Enterprise, nil
+}
