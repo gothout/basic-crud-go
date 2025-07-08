@@ -1,7 +1,11 @@
 package controller
 
 import (
+	"basic-crud-go/internal/app/admin/enterprise/binding"
+	"basic-crud-go/internal/app/admin/enterprise/dto"
 	"basic-crud-go/internal/app/admin/enterprise/service"
+	"basic-crud-go/internal/app/admin/enterprise/util"
+	"basic-crud-go/internal/app/configuration/rest_err"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -29,5 +33,48 @@ func (c *enterpriseController) Ping(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusOK, gin.H{
 		"message": result,
+	})
+}
+
+// CreateEnterpriseHandler godoc
+// @Summary 			Create enterprise
+// @Description 		Create enterprise by CNPJ and name
+// @Tags 				Enterprise
+// @Accept       		json
+// @Produce      		json
+// @Param				request 	body 		dto.CreateEnterpriseDTO true "Company data"
+// @Success      		201      	{object}  	dto.CreateEnterpriseResponse
+// @Failure      400      {object}  rest_err.RestErr
+// @Failure      500      {object}  rest_err.RestErr
+// @Router       /enterprise/v1/create [post]
+func (c *enterpriseController) CreateEnterpriseHandler(ctx *gin.Context) {
+	var req dto.CreateEnterpriseDTO
+	// Bind JSON
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		restErr := rest_err.NewBadRequestValidationError("missing or invalid required fields", []rest_err.Causes{
+			rest_err.NewCause("body", err.Error()),
+		})
+		ctx.JSON(restErr.Code, restErr)
+		return
+	}
+	// Bind DTO
+	if err := binding.ValidateCreateEnterpriseDTO(req); err != nil {
+		restErr := rest_err.NewBadRequestValidationError("invalid request body", []rest_err.Causes{
+			rest_err.NewCause("validation", err.Error()),
+		})
+		ctx.JSON(restErr.Code, restErr)
+		return
+	}
+	// Create enterprise
+	created, err := c.service.Create(ctx, req.Name, util.RemoveNonDigits(req.Cnpj))
+	if err != nil {
+		restErr := rest_err.NewInternalServerError("error creating enterprise", []rest_err.Causes{})
+		ctx.JSON(restErr.Code, restErr)
+		return
+	}
+	ctx.JSON(http.StatusCreated, &dto.CreateEnterpriseResponse{
+		Name:      created.Name,
+		Cnpj:      created.Cnpj,
+		CreatedAt: created.CreateAt,
 	})
 }

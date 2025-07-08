@@ -1,9 +1,79 @@
+definitions:
+  dto.CreateEnterpriseDTO:
+    properties:
+      cnpj:
+        type: string
+      name:
+        type: string
+    required:
+    - cnpj
+    - name
+    type: object
+  dto.CreateEnterpriseResponse:
+    properties:
+      cnpj:
+        type: string
+      createdAt:
+        type: string
+      name:
+        type: string
+    type: object
+  rest_err.Causes:
+    properties:
+      field:
+        type: string
+      message:
+        type: string
+    type: object
+  rest_err.RestErr:
+    properties:
+      causes:
+        items:
+          $ref: '#/definitions/rest_err.Causes'
+        type: array
+      code:
+        type: integer
+      error:
+        type: string
+      message:
+        type: string
+    type: object
 info:
   contact: {}
   description: API administrativa generica para um Basic Crud
   title: Basic Crud
   version: "1.0"
 paths:
+  /enterprise/v1/create:
+    post:
+      consumes:
+      - application/json
+      description: Create enterprise by CNPJ and name
+      parameters:
+      - description: Company data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CreateEnterpriseDTO'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/dto.CreateEnterpriseResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/rest_err.RestErr'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/rest_err.RestErr'
+      summary: Create enterprise
+      tags:
+      - Enterprise
   /enterprise/v1/ping:
     get:
       description: Retorna um pong para verificar se o serviço enterprise está ativo

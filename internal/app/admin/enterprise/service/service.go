@@ -1,7 +1,11 @@
 package service
 
-import "context"
+import (
+	"basic-crud-go/internal/app/admin/enterprise/model"
+	"context"
+)
 
 type EnterpriseService interface {
 	Ping(ctx context.Context) (string, error)
+	Create(ctx context.Context, name, cnpj string) (model.Enterprise, error)
 }
