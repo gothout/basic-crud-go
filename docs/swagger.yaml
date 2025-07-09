@@ -29,6 +29,19 @@ definitions:
       updatedAt:
         type: string
     type: object
+  dto.ReadEnterprisesResponse:
+    properties:
+      enterprises:
+        items:
+          $ref: '#/definitions/dto.ReadEnterpriseResponse'
+        type: array
+      limit:
+        type: integer
+      page:
+        type: integer
+      total:
+        type: integer
+    type: object
   rest_err.Causes:
     properties:
       field:
@@ -98,6 +111,38 @@ paths:
               type: string
             type: object
       summary: Healthcheck do Enterprise
+      tags:
+      - Enterprise
+  /enterprise/v1/read:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve a paginated list of enterprises
+      parameters:
+      - description: Page number (min 1)
+        in: query
+        name: page
+        type: integer
+      - description: 'Items per page (default: 10)'
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.ReadEnterprisesResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/rest_err.RestErr'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/rest_err.RestErr'
+      summary: List enterprises
       tags:
       - Enterprise
   /enterprise/v1/read/{cnpj}:

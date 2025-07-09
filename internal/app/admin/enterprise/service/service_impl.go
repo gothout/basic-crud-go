@@ -48,6 +48,11 @@ func (s *enterpriseServiceImpl) Create(ctx context.Context, name, cnpj string) (
 func (s *enterpriseServiceImpl) ReadAllEnterprise(ctx context.Context, page, limit int) ([]model.Enterprise, error) {
 	var enterprises []model.Enterprise
 
+	if page < 1 {
+		logger.LogWithAutoFuncName(logger.Info, module, "page out of range. Defaulting to 1.")
+		page = 1
+	}
+
 	if limit <= 0 || limit > 10 {
 		logger.LogWithAutoFuncName(logger.Info, module, "limit out of range. Defaulting to 10.")
 		limit = 10
@@ -55,7 +60,7 @@ func (s *enterpriseServiceImpl) ReadAllEnterprise(ctx context.Context, page, lim
 
 	enterprises, err := s.repo.ReadAllEnterprise(ctx, page, limit)
 	if err != nil {
-		return nil, nil
+		return nil, err
 	}
 
 	return enterprises, nil

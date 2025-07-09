@@ -44,3 +44,10 @@ func ValidateReadEnterpriseDTO(c *gin.Context) (*dto.ReadEnterpriseDTO, error) {
 
 	return &input, nil
 }
+
+// ValidateReadEnterprisesDTO binds optional query parameters for reading enterprises
+func ValidateReadEnterprisesDTO(c *gin.Context) *dto.ReadEnterprisesDTO {
+	var input dto.ReadEnterprisesDTO
+	_ = c.ShouldBindQuery(&input) // Ignore error, as fields are optional
+	return &input
+}

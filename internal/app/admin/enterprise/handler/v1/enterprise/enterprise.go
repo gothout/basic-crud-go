@@ -17,6 +17,7 @@ func RegisterEnterpriseRoutes(router *gin.RouterGroup) {
 	{
 		group.GET("ping", ctrl.Ping)
 		group.POST("create", ctrl.CreateEnterpriseHandler)
+		group.GET("read", ctrl.ReadEnterprisesHandler)
 		group.GET("read/:cnpj", ctrl.ReadEnterpriseHandler)
 	}
 

@@ -14,3 +14,10 @@ type ReadEnterpriseResponse struct {
 	CreatedAt time.Time `json:"createdAt"`
 	UpdatedAt time.Time `json:"updatedAt"`
 }
+
+type ReadEnterprisesResponse struct {
+	Page        int                      `json:"page"`
+	Limit       int                      `json:"limit"`
+	Total       int                      `json:"total"`
+	Enterprises []ReadEnterpriseResponse `json:"enterprises"`
+}

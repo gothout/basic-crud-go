@@ -114,3 +114,54 @@ func (c *enterpriseController) ReadEnterpriseHandler(ctx *gin.Context) {
 		UpdatedAt: enterprise.UpdateAt,
 	})
 }
+
+// ReadEnterprisesHandler godoc
+// @Summary      List enterprises
+// @Description  Retrieve a paginated list of enterprises
+// @Tags         Enterprise
+// @Accept       json
+// @Produce      json
+// @Param        page   query     int     false   "Page number (min 1)"
+// @Param        limit  query     int     false   "Items per page (default: 10)"
+// @Success      200    {object}  dto.ReadEnterprisesResponse
+// @Failure      400    {object}  rest_err.RestErr
+// @Failure      500    {object}  rest_err.RestErr
+// @Router       /enterprise/v1/read [get]
+func (c *enterpriseController) ReadEnterprisesHandler(ctx *gin.Context) {
+	req := binding.ValidateReadEnterprisesDTO(ctx)
+	//if err != nil {
+	//	restErr := rest_err.NewBadRequestValidationError("invalid request body", []rest_err.Causes{
+	//		rest_err.NewCause("validation", err.Error()),
+	//	})
+	//	ctx.JSON(restErr.Code, restErr)
+	//	return
+	//}
+
+	// Fetch enterprises
+	enterprises, err := c.service.ReadAllEnterprise(ctx, req.Page, req.Limit)
+	if err != nil {
+		restErr := rest_err.NewInternalServerError("failed to fetch enterprises", []rest_err.Causes{
+			rest_err.NewCause("read enteprises", "error"),
+		})
+		ctx.JSON(restErr.Code, restErr)
+		return
+	}
+
+	// Map to DTO
+	var result []dto.ReadEnterpriseResponse
+	for _, ent := range enterprises {
+		result = append(result, dto.ReadEnterpriseResponse{
+			Name:      ent.Name,
+			Cnpj:      ent.Cnpj,
+			CreatedAt: ent.CreateAt,
+			UpdatedAt: ent.UpdateAt,
+		})
+	}
+
+	ctx.JSON(http.StatusOK, dto.ReadEnterprisesResponse{
+		Page:        req.Page,
+		Limit:       req.Limit,
+		Total:       len(result),
+		Enterprises: result,
+	})
+}
