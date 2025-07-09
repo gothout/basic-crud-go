@@ -47,12 +47,12 @@ const (
 	Error   LogLevel = "error"
 )
 
-var currentLogLevel = loadLogLevel()
+var currentLogLevel = -1
 
 // Log writes a message to the corresponding log file based on the level.
 // It supports any data type for the message (string, struct, error, etc.)
 func Log[T any](level LogLevel, module string, message T) {
-	if currentLogLevel == 0 {
+	if currentLogLevel == -1 {
 		currentLogLevel = loadLogLevel()
 	}
 	// If LOG_LEVEL=0 (all), allow everything
