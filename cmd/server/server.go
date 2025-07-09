@@ -6,6 +6,7 @@ import (
 	env "basic-crud-go/internal/configuration/env/environment"
 	envServer "basic-crud-go/internal/configuration/env/server"
 	"fmt"
+	"github.com/gin-contrib/cors"
 	"log"
 	"net/http"
 
@@ -14,14 +15,32 @@ import (
 
 func InitServer() *gin.Engine {
 	router := gin.Default()
+	devCors, prodCors := envServer.GetCorsOrigins()
 	if env.GetEnvironment() == "DEV" {
 		gin.SetMode(gin.DebugMode)
+		// Cors set
+		config := cors.Config{
+			AllowOrigins: []string{
+				fmt.Sprintf("http://%s", devCors),
+				fmt.Sprintf("https://%s", devCors),
+			},
+			AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+			AllowHeaders:     []string{"Origin", "Content-Type", "Authorization"},
+			AllowCredentials: true,
+		}
+		router.Use(cors.New(config))
 	}
 	if env.GetEnvironment() == "PROD" {
 		gin.SetMode(gin.ReleaseMode)
+		// Cors set
+		config := cors.Config{
+			AllowOrigins:     []string{fmt.Sprintf("https://%s", prodCors)},
+			AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+			AllowHeaders:     []string{"Origin", "Content-Type", "Authorization"},
+			AllowCredentials: true,
+		}
+		router.Use(cors.New(config))
 	}
-
-	// future -- CORS
 
 	// register handlers
 	userHandler.RegisterUserRoutes(router)

@@ -27,6 +27,11 @@ func GetDNS() string {
 	return os.Getenv("DNS")
 }
 
+// GetCorsOrigins retrieves the CORS origins for both DEV and PROD environments.
+func GetCorsOrigins() (devCors string, prodCors string) {
+	return os.Getenv("CORS_DEV"), os.Getenv("CORS_PROD")
+}
+
 // GetHTTPSuse checks if HTTPS should be used and if certificates exist and are valid.
 func GetHTTPSuse() bool {
 	https := strings.ToUpper(os.Getenv("HTTPS"))
@@ -70,6 +75,13 @@ func ValidateServerEnv() error {
 	}
 	if GetDNS() == "" {
 		return fmt.Errorf("environment variable DNS not set")
+	}
+	devCors, prodCors := GetCorsOrigins()
+	if devCors == "" {
+		return fmt.Errorf("environment variable CORS_DEV not set")
+	}
+	if prodCors == "" {
+		return fmt.Errorf("environment variable CORS_PROD not set")
 	}
 
 	https := strings.ToUpper(os.Getenv("HTTPS"))
