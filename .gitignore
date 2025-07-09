@@ -31,6 +31,8 @@ go.work.sum
 certificates/*
 !certificates/readme.md
 
+# Ignore dir logs
+logs/*
 
 # Editor/IDE
 # .idea/
