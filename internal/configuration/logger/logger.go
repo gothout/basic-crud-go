@@ -1,3 +1,23 @@
+// Package logger provides a simple and extensible logging utility for writing
+// application logs to separate daily files based on severity level.
+//
+// Log messages are stored in the "logs/" directory, with filenames in the format:
+//
+//	info_02072025.log, warning_02072025.log, error_02072025.log
+//
+// Each log entry is prepended with a level tag, module name, timestamp, and message content.
+//
+// The logger supports generic messages of any type, including strings, errors, and structs.
+// Structs will be automatically marshaled into JSON format for readability.
+//
+// Example:
+//
+//	logger.Log(logger.Info, "UserService", "User created successfully")
+//	logger.Log(logger.Warning, "AuthMiddleware", fmt.Errorf("token expired"))
+//	logger.Log(logger.Error, "DatabaseService", struct {
+//	    Code int    `json:"code"`
+//	    Msg  string `json:"msg"`
+//	}{Code: 500, Msg: "Database connection failed"})
 package logger
 
 import (

@@ -5,7 +5,7 @@ import (
 	"basic-crud-go/internal/app/admin/enterprise/dto"
 	"basic-crud-go/internal/app/admin/enterprise/service"
 	"basic-crud-go/internal/app/admin/enterprise/util"
-	"basic-crud-go/internal/app/configuration/rest_err"
+	"basic-crud-go/internal/configuration/rest_err"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
