@@ -2,10 +2,13 @@ package repository
 
 import (
 	"basic-crud-go/internal/app/admin/enterprise/model"
+	"basic-crud-go/internal/configuration/logger"
 	"context"
 	"database/sql"
 	"time"
 )
+
+const module string = "Enterprise-Repository"
 
 type enterpriseRepositoryImpl struct {
 	db *sql.DB
@@ -31,6 +34,7 @@ func (r *enterpriseRepositoryImpl) CreateEnterpriseByCNPJ(ctx context.Context, n
 	var id int64
 	err := r.db.QueryRowContext(ctx, query, name, cnpj, false, now, now).Scan(&id)
 	if err != nil {
+		logger.Log(logger.Error, module, err)
 		return 0, err
 	}
 
@@ -59,6 +63,7 @@ func (r *enterpriseRepositoryImpl) ReadEnterpriseByCNPJ(ctx context.Context, cnp
 		if err == sql.ErrNoRows {
 			return model.Enterprise{}, nil
 		}
+		logger.Log(logger.Error, module, err)
 		return model.Enterprise{}, err
 	}
 
