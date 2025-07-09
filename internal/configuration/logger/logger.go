@@ -10,6 +10,13 @@
 // The logger supports generic messages of any type, including strings, errors, and structs.
 // Structs will be automatically marshaled into JSON format for readability.
 //
+// Log level filtering is controlled via the environment variable LOG_LEVEL:
+//
+//	0 = log all
+//	1 = log only warning, info, and error
+//	2 = log only info and error
+//	3 = log only error
+//
 // Example:
 //
 //	logger.Log(logger.Info, "UserService", "User created successfully")
@@ -21,6 +28,7 @@
 package logger
 
 import (
+	env "basic-crud-go/internal/configuration/env/log"
 	"encoding/json"
 	"fmt"
 	"os"
@@ -39,9 +47,20 @@ const (
 	Error   LogLevel = "error"
 )
 
+var currentLogLevel = loadLogLevel()
+
 // Log writes a message to the corresponding log file based on the level.
 // It supports any data type for the message (string, struct, error, etc.)
 func Log[T any](level LogLevel, module string, message T) {
+	if currentLogLevel == 0 {
+		currentLogLevel = loadLogLevel()
+	}
+	// If LOG_LEVEL=0 (all), allow everything
+	// Otherwise, skip if current level is more restrictive than message
+	if currentLogLevel > 0 && levelPriority(level) < currentLogLevel {
+		return
+	}
+
 	now := time.Now()
 	date := now.Format("02012006") // e.g., 01072025
 	timestamp := now.Format("2006-01-02 15:04:05")
@@ -105,5 +124,37 @@ func levelString(level LogLevel) string {
 		return "ERROR"
 	default:
 		return "UNKNOWN"
+	}
+}
+
+// levelPriority returns a numeric priority for comparison
+// Lower number = less severe
+func levelPriority(level LogLevel) int {
+	switch level {
+	case Error:
+		return 3
+	case Info:
+		return 2
+	case Warning:
+		return 1
+	default:
+		return 0
+	}
+}
+
+// loadLogLevel reads the LOG_LEVEL environment variable and returns the active threshold
+func loadLogLevel() int {
+	val := env.GetLogLevel()
+	switch val {
+	case "0":
+		return 0 // log everything
+	case "1":
+		return 1 // warning, info, error
+	case "2":
+		return 2 // info, error
+	case "3":
+		return 3 // error only
+	default:
+		return 0 // fallback to all
 	}
 }

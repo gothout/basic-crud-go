@@ -24,7 +24,7 @@ func ValidateLogsEnv() error {
 	}
 
 	levelInt, err := strconv.Atoi(logLevel)
-	if err != nil || levelInt > 2 {
+	if err != nil || levelInt > 3 {
 		return fmt.Errorf("LOG_LEVEL must be a valid integer <= 2")
 	}
 
