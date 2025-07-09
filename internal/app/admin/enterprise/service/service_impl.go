@@ -3,11 +3,14 @@ package service
 import (
 	"basic-crud-go/internal/app/admin/enterprise/model"
 	"basic-crud-go/internal/app/admin/enterprise/repository"
+	"basic-crud-go/internal/configuration/logger"
 	"basic-crud-go/internal/infrastructure/db/postgres"
 	"context"
 	"fmt"
 	"time"
 )
+
+const module string = "Enterprise-Service"
 
 type enterpriseServiceImpl struct {
 	repo repository.EnterpriseRepository
@@ -39,6 +42,23 @@ func (s *enterpriseServiceImpl) Create(ctx context.Context, name, cnpj string) (
 	}
 
 	return Enterprise, nil
+}
+
+// ReadAllEnterprise retrieves a paginated list of enterprises.
+func (s *enterpriseServiceImpl) ReadAllEnterprise(ctx context.Context, page, limit int) ([]model.Enterprise, error) {
+	var enterprises []model.Enterprise
+
+	if limit <= 0 || limit > 10 {
+		logger.LogWithAutoFuncName(logger.Info, module, "limit out of range. Defaulting to 10.")
+		limit = 10
+	}
+
+	enterprises, err := s.repo.ReadAllEnterprise(ctx, page, limit)
+	if err != nil {
+		return nil, nil
+	}
+
+	return enterprises, nil
 }
 
 // Read enteprise by cnpj

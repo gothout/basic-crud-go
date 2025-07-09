@@ -5,7 +5,12 @@
 //
 //	info_02072025.log, warning_02072025.log, error_02072025.log
 //
-// Each log entry is prepended with a level tag, module name, timestamp, and message content.
+// Each log entry includes:
+//   - log level
+//   - module name
+//   - function name
+//   - timestamp
+//   - message content
 //
 // The logger supports generic messages of any type, including strings, errors, and structs.
 // Structs will be automatically marshaled into JSON format for readability.
@@ -17,11 +22,19 @@
 //	2 = log only info and error
 //	3 = log only error
 //
-// Example:
+// There are two logging functions:
 //
-//	logger.Log(logger.Info, "UserService", "User created successfully")
-//	logger.Log(logger.Warning, "AuthMiddleware", fmt.Errorf("token expired"))
-//	logger.Log(logger.Error, "DatabaseService", struct {
+//	Log(level, module, function, message)
+//	LogWithAutoFuncName(level, module, message)
+//
+// Use Log for explicit function naming, or LogWithAutoFuncName for automatic detection
+// of the calling function (note: slightly slower due to runtime inspection).
+//
+// Examples:
+//
+//	logger.Log(logger.Info, "UserService", "CreateUser", "User created successfully")
+//	logger.LogWithAutoFuncName(logger.Warning, "AuthMiddleware", fmt.Errorf("token expired"))
+//	logger.LogWithAutoFuncName(logger.Error, "DatabaseService", struct {
 //	    Code int    `json:"code"`
 //	    Msg  string `json:"msg"`
 //	}{Code: 500, Msg: "Database connection failed"})
@@ -33,6 +46,8 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"runtime"
+	"strings"
 	"time"
 )
 
@@ -51,7 +66,7 @@ var currentLogLevel = -1
 
 // Log writes a message to the corresponding log file based on the level.
 // It supports any data type for the message (string, struct, error, etc.)
-func Log[T any](level LogLevel, module string, message T) {
+func Log[T any](level LogLevel, module, function string, message T) {
 	if currentLogLevel == -1 {
 		currentLogLevel = loadLogLevel()
 	}
@@ -68,7 +83,7 @@ func Log[T any](level LogLevel, module string, message T) {
 	// Convert message to string (JSON for structs, etc.)
 	msgString := convertToString(message)
 
-	logMsg := fmt.Sprintf("[%s] [%s] %s - %s\n", levelString(level), module, timestamp, msgString)
+	logMsg := fmt.Sprintf("[%s] [%s] [%s] %s - %s\n", levelString(level), module, function, timestamp, msgString)
 
 	// Check if log directory exists; create only if needed
 	if _, statErr := os.Stat(logDir); os.IsNotExist(statErr) {
@@ -94,6 +109,30 @@ func Log[T any](level LogLevel, module string, message T) {
 	if _, err := file.WriteString(logMsg); err != nil {
 		fmt.Printf("Failed to write to log file: %v\n", err)
 	}
+}
+
+// LogWithAutoFuncName logs the message using the function name of the caller automatically.
+// This is slightly slower than manually providing the function name.
+func LogWithAutoFuncName[T any](level LogLevel, module string, message T) {
+	function := getCallerFunctionName()
+	Log(level, module, function, message)
+}
+
+// getCallerFunctionName extracts the name of the function that called LogWithAutoFuncName.
+func getCallerFunctionName() string {
+	pc, _, _, ok := runtime.Caller(2) // 2 levels up: caller of LogWithAutoFuncName
+	if !ok {
+		return "unknown"
+	}
+
+	fn := runtime.FuncForPC(pc)
+	if fn == nil {
+		return "unknown"
+	}
+
+	fullName := fn.Name() // e.g., "basic-crud-go/internal/app/.../service.(*enterpriseServiceImpl).ReadAllEnterprise"
+	parts := strings.Split(fullName, ".")
+	return parts[len(parts)-1]
 }
 
 // convertToString converts any input to a string for logging
