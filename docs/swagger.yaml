@@ -42,6 +42,28 @@ definitions:
       total:
         type: integer
     type: object
+  dto.UpdateEnterpriseDTO:
+    properties:
+      cnpj:
+        type: string
+      newCnpj:
+        type: string
+      newName:
+        type: string
+    required:
+    - cnpj
+    type: object
+  dto.UpdateEnterpriseResponse:
+    properties:
+      newCnpj:
+        type: string
+      newName:
+        type: string
+      oldCnpj:
+        type: string
+      updatedAt:
+        type: string
+    type: object
   rest_err.Causes:
     properties:
       field:
@@ -172,6 +194,36 @@ paths:
           schema:
             $ref: '#/definitions/rest_err.RestErr'
       summary: Read enterprise
+      tags:
+      - Enterprise
+  /enterprise/v1/update:
+    put:
+      consumes:
+      - application/json
+      description: Update enterprise by CNPJ
+      parameters:
+      - description: Company data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UpdateEnterpriseDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.UpdateEnterpriseResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/rest_err.RestErr'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/rest_err.RestErr'
+      summary: Update enterprise
       tags:
       - Enterprise
   /user/v1/ping:

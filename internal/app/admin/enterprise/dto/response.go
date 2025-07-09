@@ -21,3 +21,10 @@ type ReadEnterprisesResponse struct {
 	Total       int                      `json:"total"`
 	Enterprises []ReadEnterpriseResponse `json:"enterprises"`
 }
+
+type UpdateEnterpriseResponse struct {
+	NewName   *string   `json:"newName,omitempty"`
+	OldCnpj   *string   `json:"oldCnpj,omitempty"`
+	NewCnpj   string    `json:"newCnpj"`
+	UpdatedAt time.Time `json:"updatedAt"`
+}

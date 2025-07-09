@@ -169,6 +169,52 @@
                 }
             }
         },
+        "/enterprise/v1/update": {
+            "put": {
+                "description": "Update enterprise by CNPJ",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Enterprise"
+                ],
+                "summary": "Update enterprise",
+                "parameters": [
+                    {
+                        "description": "Company data",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.UpdateEnterpriseDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.UpdateEnterpriseResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/rest_err.RestErr"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/rest_err.RestErr"
+                        }
+                    }
+                }
+            }
+        },
         "/user/v1/ping": {
             "get": {
                 "description": "Retorna um pong para verificar se o serviço User está ativo",
@@ -257,6 +303,40 @@
                 },
                 "total": {
                     "type": "integer"
+                }
+            }
+        },
+        "dto.UpdateEnterpriseDTO": {
+            "type": "object",
+            "required": [
+                "cnpj"
+            ],
+            "properties": {
+                "cnpj": {
+                    "type": "string"
+                },
+                "newCnpj": {
+                    "type": "string"
+                },
+                "newName": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.UpdateEnterpriseResponse": {
+            "type": "object",
+            "properties": {
+                "newCnpj": {
+                    "type": "string"
+                },
+                "newName": {
+                    "type": "string"
+                },
+                "oldCnpj": {
+                    "type": "string"
+                },
+                "updatedAt": {
+                    "type": "string"
                 }
             }
         },

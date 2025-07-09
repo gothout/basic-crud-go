@@ -13,3 +13,9 @@ type ReadEnterprisesDTO struct {
 	Page  int `form:"page" binding:"omitempty"`
 	Limit int `form:"limit" binding:"omitempty"`
 }
+
+type UpdateEnterpriseDTO struct {
+	Cnpj    string `json:"cnpj" binding:"required"`
+	NewCnpj string `json:"newCnpj" binding:"omitempty"`
+	NewName string `json:"newName" binding:"omitempty"`
+}

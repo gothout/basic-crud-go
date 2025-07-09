@@ -113,3 +113,29 @@ func (r *enterpriseRepositoryImpl) ReadEnterpriseByCNPJ(ctx context.Context, cnp
 
 	return enterprise, nil
 }
+
+// Update enterprise by CNPJ value
+func (r *enterpriseRepositoryImpl) Update(ctx context.Context, id int64, newCnpj, newName string) (model.Enterprise, error) {
+	var updatedEnterprise model.Enterprise
+
+	query := `
+		UPDATE enterprise
+		SET name = $1, cnpj = $2, updated_at = NOW()
+		WHERE id = $3
+		RETURNING id, name, cnpj, active, created_at, updated_at;
+	`
+	err := r.db.QueryRowContext(ctx, query, newName, newCnpj, id).Scan(
+		&updatedEnterprise.Id,
+		&updatedEnterprise.Name,
+		&updatedEnterprise.Cnpj,
+		&updatedEnterprise.Active,
+		&updatedEnterprise.CreateAt,
+		&updatedEnterprise.UpdateAt,
+	)
+	if err != nil {
+		logger.Log(logger.Error, module, "Update", err)
+		return model.Enterprise{}, err
+	}
+
+	return updatedEnterprise, nil
+}

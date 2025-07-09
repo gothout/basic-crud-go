@@ -7,6 +7,7 @@ import (
 	"basic-crud-go/internal/infrastructure/db/postgres"
 	"context"
 	"fmt"
+	"strings"
 	"time"
 )
 
@@ -77,4 +78,30 @@ func (s *enterpriseServiceImpl) Read(ctx context.Context, cnpj string) (model.En
 	}
 
 	return Enterprise, nil
+}
+
+// Update enterprise by cnpj
+func (s *enterpriseServiceImpl) Update(ctx context.Context, oldCnpj, newCnpj, newName string) (model.Enterprise, error) {
+
+	enterprise, err := s.Read(ctx, oldCnpj)
+	if err != nil {
+		return model.Enterprise{}, fmt.Errorf("enterprise not found")
+	}
+
+	if newCnpj == "" {
+		newCnpj = enterprise.Cnpj
+	}
+	if newName == "" {
+		newName = enterprise.Name
+	}
+
+	updatedEnterprise, err := s.repo.Update(ctx, enterprise.Id, newCnpj, newName)
+	if err != nil {
+		if strings.Contains(err.Error(), "enterprise_cnpj_key") {
+			return model.Enterprise{}, fmt.Errorf("enterprise_cnpj_key")
+		}
+		return model.Enterprise{}, fmt.Errorf("enterprise not found")
+	}
+
+	return updatedEnterprise, nil
 }

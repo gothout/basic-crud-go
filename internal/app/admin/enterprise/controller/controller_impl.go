@@ -165,3 +165,56 @@ func (c *enterpriseController) ReadEnterprisesHandler(ctx *gin.Context) {
 		Enterprises: result,
 	})
 }
+
+// UpdateEnterpriseHandler godoc
+// @Summary 			Update enterprise
+// @Description 		Update enterprise by CNPJ
+// @Tags 				Enterprise
+// @Accept       		json
+// @Produce      		json
+// @Param				request		body 		dto.UpdateEnterpriseDTO true "Company data"
+// @Success      		200     	{object}  	dto.UpdateEnterpriseResponse
+// @Failure      		400      	{object}  	rest_err.RestErr
+// @Failure     		500      	{object}  	rest_err.RestErr
+// @Router       /enterprise/v1/update [put]
+func (c *enterpriseController) UpdateEnterpriseHandler(ctx *gin.Context) {
+	var req dto.UpdateEnterpriseDTO
+	// Bind JSON
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		restErr := rest_err.NewBadRequestValidationError("missing or invalid required fields", []rest_err.Causes{
+			rest_err.NewCause("body", err.Error()),
+		})
+		ctx.JSON(restErr.Code, restErr)
+		return
+	}
+	// Bind DTO
+	if err := binding.ValidateUpdateEnterpriseDTO(req); err != nil {
+		restErr := rest_err.NewBadRequestValidationError("invalid request body", []rest_err.Causes{
+			rest_err.NewCause("validation", err.Error()),
+		})
+		ctx.JSON(restErr.Code, restErr)
+		return
+	}
+	// Update enterprise
+	updated, err := c.service.Update(ctx, util.RemoveNonDigits(req.Cnpj), util.RemoveNonDigits(req.NewCnpj), req.NewName)
+	if err != nil {
+		switch err.Error() {
+		case "enterprise not found":
+			restErr := rest_err.NewNotFoundError(err.Error())
+			ctx.JSON(restErr.Code, restErr)
+		case "enterprise_cnpj_key":
+			restErr := rest_err.NewBadRequestError("cnpj already exists")
+			ctx.JSON(restErr.Code, restErr)
+		default:
+			restErr := rest_err.NewInternalServerError(err.Error(), []rest_err.Causes{})
+			ctx.JSON(restErr.Code, restErr)
+		}
+		return
+	}
+	ctx.JSON(http.StatusOK, &dto.UpdateEnterpriseResponse{
+		OldCnpj:   &req.Cnpj,
+		NewName:   &updated.Name,
+		NewCnpj:   updated.Cnpj,
+		UpdatedAt: updated.UpdateAt,
+	})
+}

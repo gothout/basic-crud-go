@@ -19,6 +19,7 @@ func RegisterEnterpriseRoutes(router *gin.RouterGroup) {
 		group.POST("create", ctrl.CreateEnterpriseHandler)
 		group.GET("read", ctrl.ReadEnterprisesHandler)
 		group.GET("read/:cnpj", ctrl.ReadEnterpriseHandler)
+		group.PUT("update", ctrl.UpdateEnterpriseHandler)
 	}
 
 }

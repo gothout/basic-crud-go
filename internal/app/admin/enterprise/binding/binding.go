@@ -51,3 +51,22 @@ func ValidateReadEnterprisesDTO(c *gin.Context) *dto.ReadEnterprisesDTO {
 	_ = c.ShouldBindQuery(&input) // Ignore error, as fields are optional
 	return &input
 }
+
+// Validate request update enterprise by cnpj
+func ValidateUpdateEnterpriseDTO(input dto.UpdateEnterpriseDTO) error {
+	if strings.TrimSpace(input.Cnpj) == "" {
+		return errors.New("cnpj is required")
+	}
+	if strings.TrimSpace(input.NewName) == "" && strings.TrimSpace(input.NewCnpj) == "" {
+		return errors.New("newName or newCnpj is required")
+	}
+	if err := util.ValidateCNPJ(util.RemoveNonDigits(input.Cnpj)); err != nil {
+		return err
+	}
+	if input.NewCnpj != "" {
+		if err := util.ValidateCNPJ(util.RemoveNonDigits(input.NewCnpj)); err != nil {
+			return err
+		}
+	}
+	return nil
+}
