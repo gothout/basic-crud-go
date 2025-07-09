@@ -35,8 +35,6 @@ func (r *enterpriseRepositoryImpl) CreateEnterpriseByCNPJ(ctx context.Context, n
 	err := r.db.QueryRowContext(ctx, query, name, cnpj, false, now, now).Scan(&id)
 	if err != nil {
 		logger.Log(logger.Error, module, err)
-		logger.Log(logger.Info, module, err)
-		logger.Log(logger.Warning, module, err)
 		return 0, err
 	}
 
