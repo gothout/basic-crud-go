@@ -1,8 +1,6 @@
 package server
 
 import (
-	enterpriseHandler "basic-crud-go/internal/app/admin/enterprise/handler"
-	userHandler "basic-crud-go/internal/app/admin/user/handler"
 	env "basic-crud-go/internal/configuration/env/environment"
 	envServer "basic-crud-go/internal/configuration/env/server"
 	"fmt"
@@ -43,8 +41,7 @@ func InitServer() *gin.Engine {
 	}
 
 	// register handlers
-	userHandler.RegisterUserRoutes(router)
-	enterpriseHandler.RegisterEnterpriseRoutes(router)
+	RegisterRoutes(router)
 	return router
 
 }
