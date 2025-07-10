@@ -90,7 +90,7 @@ info:
   title: Basic Crud
   version: "1.0"
 paths:
-  /enterprise/v1/create:
+  /enterprise/v1/:
     post:
       consumes:
       - application/json
@@ -118,6 +118,62 @@ paths:
           schema:
             $ref: '#/definitions/rest_err.RestErr'
       summary: Create enterprise
+      tags:
+      - Enterprise
+    put:
+      consumes:
+      - application/json
+      description: Update enterprise by CNPJ
+      parameters:
+      - description: Company data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UpdateEnterpriseDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.UpdateEnterpriseResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/rest_err.RestErr'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/rest_err.RestErr'
+      summary: Update enterprise
+      tags:
+      - Enterprise
+  /enterprise/v1/{cnpj}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete an enterprise by CNPJ
+      parameters:
+      - description: CNPJ of the enterprise
+        in: path
+        name: cnpj
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/rest_err.RestErr'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/rest_err.RestErr'
+      summary: Delete enterprise
       tags:
       - Enterprise
   /enterprise/v1/ping:
@@ -194,36 +250,6 @@ paths:
           schema:
             $ref: '#/definitions/rest_err.RestErr'
       summary: Read enterprise
-      tags:
-      - Enterprise
-  /enterprise/v1/update:
-    put:
-      consumes:
-      - application/json
-      description: Update enterprise by CNPJ
-      parameters:
-      - description: Company data
-        in: body
-        name: request
-        required: true
-        schema:
-          $ref: '#/definitions/dto.UpdateEnterpriseDTO'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/dto.UpdateEnterpriseResponse'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/rest_err.RestErr'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/rest_err.RestErr'
-      summary: Update enterprise
       tags:
       - Enterprise
   /user/v1/ping:

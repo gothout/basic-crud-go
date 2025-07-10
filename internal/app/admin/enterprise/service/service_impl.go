@@ -105,3 +105,17 @@ func (s *enterpriseServiceImpl) Update(ctx context.Context, oldCnpj, newCnpj, ne
 
 	return updatedEnterprise, nil
 }
+
+// Delete enterprise by cnpj
+func (s *enterpriseServiceImpl) Delete(ctx context.Context, cnpj string) (bool, error) {
+	enterprise, err := s.Read(ctx, cnpj)
+	if err != nil {
+		return false, fmt.Errorf("enterprise not found")
+	}
+	deleted, err := s.repo.Delete(ctx, enterprise.Id)
+	if err != nil {
+		return deleted, fmt.Errorf("error deleting enterprise")
+	}
+
+	return deleted, nil
+}

@@ -16,10 +16,11 @@ func RegisterEnterpriseRoutes(router *gin.RouterGroup) {
 	group := router.Group("/")
 	{
 		group.GET("ping", ctrl.Ping)
-		group.POST("create", ctrl.CreateEnterpriseHandler)
+		group.POST("", ctrl.CreateEnterpriseHandler)
 		group.GET("read", ctrl.ReadEnterprisesHandler)
 		group.GET("read/:cnpj", ctrl.ReadEnterpriseHandler)
-		group.PUT("update", ctrl.UpdateEnterpriseHandler)
+		group.PUT("", ctrl.UpdateEnterpriseHandler)
+		group.DELETE(":cnpj", ctrl.DeleteEnterpriseHandler)
 	}
 
 }

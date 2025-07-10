@@ -7,7 +7,51 @@
         "version": "1.0"
     },
     "paths": {
-        "/enterprise/v1/create": {
+        "/enterprise/v1/": {
+            "put": {
+                "description": "Update enterprise by CNPJ",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Enterprise"
+                ],
+                "summary": "Update enterprise",
+                "parameters": [
+                    {
+                        "description": "Company data",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.UpdateEnterpriseDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.UpdateEnterpriseResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/rest_err.RestErr"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/rest_err.RestErr"
+                        }
+                    }
+                }
+            },
             "post": {
                 "description": "Create enterprise by CNPJ and name",
                 "consumes": [
@@ -169,9 +213,9 @@
                 }
             }
         },
-        "/enterprise/v1/update": {
-            "put": {
-                "description": "Update enterprise by CNPJ",
+        "/enterprise/v1/{cnpj}": {
+            "delete": {
+                "description": "Delete an enterprise by CNPJ",
                 "consumes": [
                     "application/json"
                 ],
@@ -181,24 +225,19 @@
                 "tags": [
                     "Enterprise"
                 ],
-                "summary": "Update enterprise",
+                "summary": "Delete enterprise",
                 "parameters": [
                     {
-                        "description": "Company data",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/dto.UpdateEnterpriseDTO"
-                        }
+                        "type": "string",
+                        "description": "CNPJ of the enterprise",
+                        "name": "cnpj",
+                        "in": "path",
+                        "required": true
                     }
                 ],
                 "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/dto.UpdateEnterpriseResponse"
-                        }
+                    "204": {
+                        "description": "No content"
                     },
                     "400": {
                         "description": "Bad Request",

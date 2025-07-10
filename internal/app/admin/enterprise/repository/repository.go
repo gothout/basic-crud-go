@@ -10,5 +10,5 @@ type EnterpriseRepository interface {
 	ReadAll(ctx context.Context, page, limit int) ([]model.Enterprise, error)
 	Read(ctx context.Context, cnpj string) (model.Enterprise, error)
 	Update(ctx context.Context, id int64, newCnpj, newName string) (model.Enterprise, error)
-	//Delete(ctx context.Context, cnpj string) (bool, error)
+	Delete(ctx context.Context, id int64) (bool, error)
 }

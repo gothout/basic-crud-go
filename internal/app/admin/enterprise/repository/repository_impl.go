@@ -34,7 +34,7 @@ func (r *enterpriseRepositoryImpl) Create(ctx context.Context, name, cnpj string
 	var id int64
 	err := r.db.QueryRowContext(ctx, query, name, cnpj, false, now, now).Scan(&id)
 	if err != nil {
-		logger.Log(logger.Error, module, "CreateEnterpriseByCNPJ", err)
+		logger.Log(logger.Error, module, "Create", err)
 		return 0, err
 	}
 
@@ -56,7 +56,7 @@ func (r *enterpriseRepositoryImpl) ReadAll(ctx context.Context, page, limit int)
 
 	rows, err := r.db.QueryContext(ctx, query, limit, offset)
 	if err != nil {
-		logger.Log(logger.Error, module, "ReadAllEnterprise", err)
+		logger.Log(logger.Error, module, "ReadAll", err)
 		return nil, err
 	}
 	defer rows.Close()
@@ -71,14 +71,14 @@ func (r *enterpriseRepositoryImpl) ReadAll(ctx context.Context, page, limit int)
 			&ent.CreateAt,
 			&ent.UpdateAt,
 		); err != nil {
-			logger.Log(logger.Error, module, "ReadAllEnterprise", err)
+			logger.Log(logger.Error, module, "ReadAll", err)
 			return nil, err
 		}
 		enterprises = append(enterprises, ent)
 	}
 
 	if err := rows.Err(); err != nil {
-		logger.Log(logger.Error, module, "ReadAllEnterprise", err)
+		logger.Log(logger.Error, module, "ReadAll", err)
 		return nil, err
 	}
 
@@ -107,7 +107,7 @@ func (r *enterpriseRepositoryImpl) Read(ctx context.Context, cnpj string) (model
 		if err == sql.ErrNoRows {
 			return model.Enterprise{}, nil
 		}
-		logger.Log(logger.Error, module, "ReadEnterpriseByCNPJ", err)
+		logger.Log(logger.Error, module, "Read", err)
 		return model.Enterprise{}, err
 	}
 
@@ -141,3 +141,15 @@ func (r *enterpriseRepositoryImpl) Update(ctx context.Context, id int64, newCnpj
 }
 
 // Delete enterprise ByCNPJ
+func (r *enterpriseRepositoryImpl) Delete(ctx context.Context, id int64) (bool, error) {
+	query := `
+		DELETE FROM enterprise WHERE id = $1 RETURNING true;
+	`
+	var ok bool
+	err := r.db.QueryRowContext(ctx, query, id).Scan(&ok)
+	if err != nil {
+		logger.Log(logger.Error, module, "Delete", err)
+		return false, err
+	}
+	return ok, nil
+}

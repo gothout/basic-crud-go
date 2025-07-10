@@ -8,4 +8,5 @@ type EnterpriseController interface {
 	ReadEnterprisesHandler(ctx *gin.Context)
 	ReadEnterpriseHandler(ctx *gin.Context)
 	UpdateEnterpriseHandler(ctx *gin.Context)
+	DeleteEnterpriseHandler(ctx *gin.Context)
 }

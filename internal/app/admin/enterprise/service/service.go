@@ -11,4 +11,5 @@ type EnterpriseService interface {
 	Read(ctx context.Context, cnpj string) (model.Enterprise, error)
 	ReadAll(ctx context.Context, page, limit int) ([]model.Enterprise, error)
 	Update(ctx context.Context, oldCnpj, newCnpj, newName string) (model.Enterprise, error)
+	Delete(ctx context.Context, cnpj string) (bool, error)
 }

@@ -70,3 +70,25 @@ func ValidateUpdateEnterpriseDTO(input dto.UpdateEnterpriseDTO) error {
 	}
 	return nil
 }
+
+// Validate request delete enterprise by cnpj
+func ValidateDeleteEnterpriseDTO(c *gin.Context) (*dto.DeleteEnterpriseDTO, error) {
+	var input dto.DeleteEnterpriseDTO
+	// Bind path param
+	if err := c.ShouldBindUri(&input); err != nil {
+		return nil, errors.New("cnpj is required")
+	}
+
+	// clean cnpj
+	input.Cnpj = util.RemoveNonDigits(input.Cnpj)
+
+	// validate cnpj
+	if strings.TrimSpace(input.Cnpj) == "" {
+		return nil, errors.New("cnpj is required")
+	}
+	if err := util.ValidateCNPJ(input.Cnpj); err != nil {
+		return nil, err
+	}
+
+	return &input, nil
+}

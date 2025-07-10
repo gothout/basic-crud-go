@@ -19,3 +19,7 @@ type UpdateEnterpriseDTO struct {
 	NewCnpj string `json:"newCnpj" binding:"omitempty"`
 	NewName string `json:"newName" binding:"omitempty"`
 }
+
+type DeleteEnterpriseDTO struct {
+	Cnpj string `uri:"cnpj" binding:"required"`
+}

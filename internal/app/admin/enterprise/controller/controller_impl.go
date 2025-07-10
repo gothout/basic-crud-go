@@ -46,7 +46,7 @@ func (c *enterpriseController) Ping(ctx *gin.Context) {
 // @Success      		200     	{object}  	dto.CreateEnterpriseResponse
 // @Failure      		400      	{object}  	rest_err.RestErr
 // @Failure     		500      	{object}  	rest_err.RestErr
-// @Router       /enterprise/v1/create [post]
+// @Router       /enterprise/v1/ [post]
 func (c *enterpriseController) CreateEnterpriseHandler(ctx *gin.Context) {
 	var req dto.CreateEnterpriseDTO
 	// Bind JSON
@@ -176,7 +176,7 @@ func (c *enterpriseController) ReadEnterprisesHandler(ctx *gin.Context) {
 // @Success      		200     	{object}  	dto.UpdateEnterpriseResponse
 // @Failure      		400      	{object}  	rest_err.RestErr
 // @Failure     		500      	{object}  	rest_err.RestErr
-// @Router       /enterprise/v1/update [put]
+// @Router       /enterprise/v1/ [put]
 func (c *enterpriseController) UpdateEnterpriseHandler(ctx *gin.Context) {
 	var req dto.UpdateEnterpriseDTO
 	// Bind JSON
@@ -217,4 +217,35 @@ func (c *enterpriseController) UpdateEnterpriseHandler(ctx *gin.Context) {
 		NewCnpj:   updated.Cnpj,
 		UpdatedAt: updated.UpdateAt,
 	})
+}
+
+// DeleteEnterpriseHandler godoc
+// @Summary      Delete enterprise
+// @Description  Delete an enterprise by CNPJ
+// @Tags         Enterprise
+// @Accept       json
+// @Produce      json
+// @Param        cnpj  path      string  true  "CNPJ of the enterprise"
+// @Success      204   "No content"
+// @Failure      400   {object}  rest_err.RestErr
+// @Failure      500   {object}  rest_err.RestErr
+// @Router       /enterprise/v1/{cnpj} [delete]
+func (c *enterpriseController) DeleteEnterpriseHandler(ctx *gin.Context) {
+	req, err := binding.ValidateDeleteEnterpriseDTO(ctx)
+	if err != nil {
+		restErr := rest_err.NewBadRequestValidationError("invalid request body", []rest_err.Causes{
+			rest_err.NewCause("validation", err.Error()),
+		})
+		ctx.JSON(restErr.Code, restErr)
+		return
+	}
+
+	// delete enterprise
+	deleted, err := c.service.Delete(ctx, util.RemoveNonDigits(req.Cnpj))
+	if err != nil {
+		restErr := rest_err.NewNotFoundError("enterprise not found")
+		ctx.JSON(restErr.Code, restErr)
+		return
+	}
+	ctx.JSON(http.StatusNoContent, gin.H{"deleted": deleted})
 }
