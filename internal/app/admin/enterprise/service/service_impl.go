@@ -4,7 +4,6 @@ import (
 	"basic-crud-go/internal/app/admin/enterprise/model"
 	"basic-crud-go/internal/app/admin/enterprise/repository"
 	"basic-crud-go/internal/configuration/logger"
-	"basic-crud-go/internal/infrastructure/db/postgres"
 	"context"
 	"fmt"
 	"strings"
@@ -17,9 +16,9 @@ type enterpriseServiceImpl struct {
 	repo repository.EnterpriseRepository
 }
 
-func NewEnterpriseService() EnterpriseService {
+func NewEnterpriseService(r repository.EnterpriseRepository) EnterpriseService {
 	return &enterpriseServiceImpl{
-		repo: repository.NewRepositoryImpl(postgres.GetDB()),
+		repo: r,
 	}
 }
 
