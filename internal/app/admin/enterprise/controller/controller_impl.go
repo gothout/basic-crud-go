@@ -138,7 +138,7 @@ func (c *enterpriseController) ReadEnterprisesHandler(ctx *gin.Context) {
 	//}
 
 	// Fetch enterprises
-	enterprises, err := c.service.ReadAllEnterprise(ctx, req.Page, req.Limit)
+	enterprises, err := c.service.ReadAll(ctx, req.Page, req.Limit)
 	if err != nil {
 		restErr := rest_err.NewInternalServerError("failed to fetch enterprises", []rest_err.Causes{
 			rest_err.NewCause("read enteprises", "error"),

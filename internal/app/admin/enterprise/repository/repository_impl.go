@@ -22,7 +22,7 @@ func NewRepositoryImpl(db *sql.DB) EnterpriseRepository {
 }
 
 // Create enterprise
-func (r *enterpriseRepositoryImpl) CreateEnterpriseByCNPJ(ctx context.Context, name, cnpj string) (int64, error) {
+func (r *enterpriseRepositoryImpl) Create(ctx context.Context, name, cnpj string) (int64, error) {
 	query := `
 		INSERT INTO enterprise (name, cnpj, active, created_at, updated_at)
 		VALUES ($1, $2, $3, $4, $5)
@@ -42,7 +42,7 @@ func (r *enterpriseRepositoryImpl) CreateEnterpriseByCNPJ(ctx context.Context, n
 }
 
 // ReadAllEnterprise retrieves a paginated list of enterprises.
-func (r *enterpriseRepositoryImpl) ReadAllEnterprise(ctx context.Context, page, limit int) ([]model.Enterprise, error) {
+func (r *enterpriseRepositoryImpl) ReadAll(ctx context.Context, page, limit int) ([]model.Enterprise, error) {
 	var enterprises []model.Enterprise
 
 	offset := (page - 1) * limit
@@ -86,7 +86,7 @@ func (r *enterpriseRepositoryImpl) ReadAllEnterprise(ctx context.Context, page, 
 }
 
 // Read enteprise by CNPJ value
-func (r *enterpriseRepositoryImpl) ReadEnterpriseByCNPJ(ctx context.Context, cnpj string) (model.Enterprise, error) {
+func (r *enterpriseRepositoryImpl) Read(ctx context.Context, cnpj string) (model.Enterprise, error) {
 	var enterprise model.Enterprise
 
 	query := `
@@ -139,3 +139,5 @@ func (r *enterpriseRepositoryImpl) Update(ctx context.Context, id int64, newCnpj
 
 	return updatedEnterprise, nil
 }
+
+// Delete enterprise ByCNPJ

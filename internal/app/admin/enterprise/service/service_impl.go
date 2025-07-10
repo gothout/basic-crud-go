@@ -30,7 +30,7 @@ func (s *enterpriseServiceImpl) Ping(ctx context.Context) (string, error) {
 // Create enterprise
 func (s *enterpriseServiceImpl) Create(ctx context.Context, name, cnpj string) (model.Enterprise, error) {
 	var Enterprise model.Enterprise
-	_, err := s.repo.CreateEnterpriseByCNPJ(ctx, name, cnpj)
+	_, err := s.repo.Create(ctx, name, cnpj)
 	if err != nil {
 		return Enterprise, fmt.Errorf("erro ao criar empresa")
 	}
@@ -46,7 +46,7 @@ func (s *enterpriseServiceImpl) Create(ctx context.Context, name, cnpj string) (
 }
 
 // ReadAllEnterprise retrieves a paginated list of enterprises.
-func (s *enterpriseServiceImpl) ReadAllEnterprise(ctx context.Context, page, limit int) ([]model.Enterprise, error) {
+func (s *enterpriseServiceImpl) ReadAll(ctx context.Context, page, limit int) ([]model.Enterprise, error) {
 	var enterprises []model.Enterprise
 
 	if page < 1 {
@@ -59,7 +59,7 @@ func (s *enterpriseServiceImpl) ReadAllEnterprise(ctx context.Context, page, lim
 		limit = 10
 	}
 
-	enterprises, err := s.repo.ReadAllEnterprise(ctx, page, limit)
+	enterprises, err := s.repo.ReadAll(ctx, page, limit)
 	if err != nil {
 		return nil, err
 	}
@@ -69,7 +69,7 @@ func (s *enterpriseServiceImpl) ReadAllEnterprise(ctx context.Context, page, lim
 
 // Read enteprise by cnpj
 func (s *enterpriseServiceImpl) Read(ctx context.Context, cnpj string) (model.Enterprise, error) {
-	Enterprise, err := s.repo.ReadEnterpriseByCNPJ(ctx, cnpj)
+	Enterprise, err := s.repo.Read(ctx, cnpj)
 	if err != nil {
 		return model.Enterprise{}, fmt.Errorf("erro ao ler empresa")
 	}
