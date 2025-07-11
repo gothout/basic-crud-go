@@ -18,6 +18,41 @@ definitions:
       name:
         type: string
     type: object
+  dto.CreateUserDTO:
+    properties:
+      cnpj:
+        type: string
+      email:
+        type: string
+      first_name:
+        type: string
+      last_name:
+        type: string
+      number:
+        type: string
+      password:
+        type: string
+    required:
+    - cnpj
+    - email
+    - first_name
+    - last_name
+    - number
+    - password
+    type: object
+  dto.CreateUserResponse:
+    properties:
+      cnpj:
+        type: string
+      email:
+        type: string
+      first_name:
+        type: string
+      last_name:
+        type: string
+      number:
+        type: string
+    type: object
   dto.ReadEnterpriseResponse:
     properties:
       cnpj:
@@ -252,6 +287,40 @@ paths:
       summary: Read enterprise
       tags:
       - Enterprise
+  /user/v1/:
+    post:
+      consumes:
+      - application/json
+      description: Create user by CNPJ, name and email
+      parameters:
+      - description: User Data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CreateUserDTO'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/dto.CreateUserResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/rest_err.RestErr'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/rest_err.RestErr'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/rest_err.RestErr'
+      summary: Create user
+      tags:
+      - User
   /user/v1/ping:
     get:
       description: Retorna um pong para verificar se o serviço User está ativo
