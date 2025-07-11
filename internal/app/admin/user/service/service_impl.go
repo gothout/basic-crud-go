@@ -1,6 +1,7 @@
 package service
 
 import (
+	entModel "basic-crud-go/internal/app/admin/enterprise/model"
 	"basic-crud-go/internal/app/admin/enterprise/service"
 	"basic-crud-go/internal/app/admin/user/model"
 	"basic-crud-go/internal/app/admin/user/repository"
@@ -47,4 +48,18 @@ func (s *userService) Create(ctx context.Context, enterpriseCnpj, number, firstN
 		return nil, fmt.Errorf("failed to create user: %w", err)
 	}
 	return user, nil
+}
+
+func (s *userService) Read(ctx context.Context, email string) (*model.User, *entModel.Enterprise, error) {
+	user, err := s.repo.Read(ctx, email)
+
+	if err != nil {
+		return nil, nil, err
+	}
+	enterprise, err := s.enterpriseService.ReadById(ctx, user.EnterpriseId)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	return user, enterprise, nil
 }

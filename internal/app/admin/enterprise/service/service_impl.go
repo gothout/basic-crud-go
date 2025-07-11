@@ -79,6 +79,19 @@ func (s *enterpriseServiceImpl) Read(ctx context.Context, cnpj string) (model.En
 	return Enterprise, nil
 }
 
+// Read enteprise by Id
+func (s *enterpriseServiceImpl) ReadById(ctx context.Context, id int64) (*model.Enterprise, error) {
+	Enterprise, err := s.repo.ReadById(ctx, id)
+	if err != nil {
+		return &model.Enterprise{}, fmt.Errorf("erro ao ler empresa")
+	}
+	if Enterprise.Name == "" {
+		return &model.Enterprise{}, fmt.Errorf("empresa nao encontrada")
+	}
+
+	return Enterprise, nil
+}
+
 // Update enterprise by cnpj
 func (s *enterpriseServiceImpl) Update(ctx context.Context, oldCnpj, newCnpj, newName string) (model.Enterprise, error) {
 

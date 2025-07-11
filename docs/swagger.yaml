@@ -77,6 +77,25 @@ definitions:
       total:
         type: integer
     type: object
+  dto.ReadUserResponse:
+    properties:
+      created_at:
+        type: string
+      email:
+        type: string
+      enterprise:
+        $ref: '#/definitions/dto.ReadEnterpriseResponse'
+      first_name:
+        type: string
+      id:
+        type: string
+      last_name:
+        type: string
+      number:
+        type: string
+      updated_at:
+        type: string
+    type: object
   dto.UpdateEnterpriseDTO:
     properties:
       cnpj:
@@ -319,6 +338,39 @@ paths:
           schema:
             $ref: '#/definitions/rest_err.RestErr'
       summary: Create user
+      tags:
+      - User
+  /user/v1/{email}:
+    get:
+      consumes:
+      - application/json
+      description: Read user by email
+      parameters:
+      - description: User email
+        in: path
+        name: email
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/dto.ReadUserResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/rest_err.RestErr'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/rest_err.RestErr'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/rest_err.RestErr'
+      summary: Read user
       tags:
       - User
   /user/v1/ping:

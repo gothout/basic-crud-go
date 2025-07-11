@@ -114,6 +114,34 @@ func (r *enterpriseRepositoryImpl) Read(ctx context.Context, cnpj string) (model
 	return enterprise, nil
 }
 
+func (r *enterpriseRepositoryImpl) ReadById(ctx context.Context, id int64) (*model.Enterprise, error) {
+	var enterprise model.Enterprise
+
+	query := `
+		SELECT id, name, cnpj, active, created_at, updated_at 
+		FROM enterprise 
+		WHERE id = $1;
+	`
+	err := r.db.QueryRowContext(ctx, query, id).Scan(
+		&enterprise.Id,
+		&enterprise.Name,
+		&enterprise.Cnpj,
+		&enterprise.Active,
+		&enterprise.CreateAt,
+		&enterprise.UpdateAt,
+	)
+
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return &model.Enterprise{}, nil
+		}
+		logger.Log(logger.Error, module, "Read", err)
+		return &model.Enterprise{}, err
+	}
+
+	return &enterprise, nil
+}
+
 // Update enterprise by CNPJ value
 func (r *enterpriseRepositoryImpl) Update(ctx context.Context, id int64, newCnpj, newName string) (model.Enterprise, error) {
 	var updatedEnterprise model.Enterprise

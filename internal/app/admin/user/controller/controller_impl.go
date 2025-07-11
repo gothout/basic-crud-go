@@ -1,6 +1,7 @@
 package controller
 
 import (
+	entepriseDto "basic-crud-go/internal/app/admin/enterprise/dto"
 	"basic-crud-go/internal/app/admin/user/binding"
 	"basic-crud-go/internal/app/admin/user/dto"
 	"basic-crud-go/internal/app/admin/user/service"
@@ -97,4 +98,56 @@ func (c *userController) CreateUserHandler(ctx *gin.Context) {
 		LastName:  created.LastName,
 		Email:     created.Email,
 	})
+}
+
+// ReadUser godoc
+// @Summary      Read user
+// @Description  Read user by email
+// @Tags         User
+// @Accept       json
+// @Produce      json
+// @Param        email 	   path     string  true "User email"
+// @Success      201      {object}  dto.ReadUserResponse
+// @Failure      400      {object}  rest_err.RestErr
+// @Failure		 404	  {object}	rest_err.RestErr
+// @Failure      500      {object}  rest_err.RestErr
+// @Router       /user/v1/{email} [get]
+func (c *userController) ReadUserHandler(ctx *gin.Context) {
+	req, err := binding.ValidateReadUserDTO(ctx)
+	if err != nil {
+		restErr := rest_err.NewBadRequestValidationError("invalid request body", []rest_err.Causes{
+			rest_err.NewCause("validation", err.Error()),
+		})
+		ctx.JSON(restErr.Code, restErr)
+		return
+	}
+
+	// read user
+	user, enterprise, err := c.service.Read(ctx, req.Email)
+	if err != nil && strings.Contains(err.Error(), "nao encontrada") {
+		restErr := rest_err.NewNotFoundError(fmt.Sprintf("user %s not found", req.Email))
+		ctx.JSON(restErr.Code, restErr)
+		return
+	}
+	if err != nil {
+		restErr := rest_err.NewInternalServerError("error read user", nil)
+		ctx.JSON(restErr.Code, restErr)
+		return
+	}
+	ctx.JSON(http.StatusOK, &dto.ReadUserResponse{
+		Id:        user.Id,
+		FirstName: user.FirstName,
+		LastName:  user.LastName,
+		Email:     user.Email,
+		Number:    user.Number,
+		CreatedAt: user.CreatedAt,
+		UpdatedAt: user.UpdatedAt,
+		Enterprise: entepriseDto.ReadEnterpriseResponse{
+			Name:      enterprise.Name,
+			Cnpj:      enterprise.Cnpj,
+			CreatedAt: enterprise.CreateAt,
+			UpdatedAt: enterprise.UpdateAt,
+		},
+	})
+
 }

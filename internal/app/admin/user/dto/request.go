@@ -8,3 +8,7 @@ type CreateUserDTO struct {
 	Number    string `json:"number" binding:"required"`
 	Password  string `json:"password" binding:"required"`
 }
+
+type ReadUserDTO struct {
+	Email string `uri:"email" binding:"required"`
+}

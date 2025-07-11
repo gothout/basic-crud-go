@@ -62,3 +62,33 @@ func (r *userRepositoryImpl) Create(ctx context.Context, enterpriseId int64, num
 
 	return &user, nil
 }
+
+// Read user by email
+func (r *userRepositoryImpl) Read(ctx context.Context, email string) (*model.User, error) {
+	var user model.User
+	query := `
+		SELECT id, enterprise_id, number, first_name, last_name, email, created_at, updated_at
+		FROM "user"
+		WHERE email = $1
+		LIMIT 1;
+	`
+	err := r.db.QueryRowContext(ctx, query, email).Scan(
+		&user.Id,
+		&user.EnterpriseId,
+		&user.Number,
+		&user.FirstName,
+		&user.LastName,
+		&user.Email,
+		&user.CreatedAt,
+		&user.UpdatedAt,
+	)
+
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return &model.User{}, nil
+		}
+		logger.Log(logger.Error, module, "Read", err)
+		return &model.User{}, err
+	}
+	return &user, nil
+}
