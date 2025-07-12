@@ -63,6 +63,70 @@ func (r *userRepositoryImpl) Create(ctx context.Context, enterpriseId int64, num
 	return &user, nil
 }
 
+// ReadAll retrieves a paginated list of users with enterprise CNPJ.
+func (r *userRepositoryImpl) ReadAll(ctx context.Context, page, limit int) ([]model.UserExtend, error) {
+	var users []model.UserExtend
+	offset := (page - 1) * limit
+
+	query := `
+		SELECT 
+			u.id,
+			u.number,
+			u.first_name,
+			u.last_name,
+			u.email,
+			u.password,
+			u.created_at,
+			u.updated_at,
+			e.name,
+			e.cnpj,
+			e.active,
+			e.created_at,
+			e.updated_at
+		FROM "user" u
+		JOIN enterprise e ON u.enterprise_id = e.id
+		ORDER BY u.id DESC
+		LIMIT $1 OFFSET $2;
+	`
+
+	rows, err := r.db.QueryContext(ctx, query, limit, offset)
+	if err != nil {
+		logger.Log(logger.Error, module, "ReadAll", err)
+		return nil, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var user model.UserExtend
+		if err := rows.Scan(
+			&user.Id,
+			&user.Number,
+			&user.FirstName,
+			&user.LastName,
+			&user.Email,
+			&user.Password,
+			&user.CreatedAt,
+			&user.UpdatedAt,
+			&user.Enterprise.Name,
+			&user.Enterprise.Cnpj,
+			&user.Enterprise.Active,
+			&user.Enterprise.CreateAt,
+			&user.Enterprise.UpdateAt,
+		); err != nil {
+			logger.Log(logger.Error, module, "ReadAll", err)
+			return nil, err
+		}
+		users = append(users, user)
+	}
+
+	if err := rows.Err(); err != nil {
+		logger.Log(logger.Error, module, "ReadAll", err)
+		return nil, err
+	}
+
+	return users, nil
+}
+
 // Read user by email
 func (r *userRepositoryImpl) Read(ctx context.Context, email string) (*model.User, error) {
 	var user model.User

@@ -28,6 +28,7 @@ func RegisterUserRoutes(router *gin.RouterGroup) {
 	{
 		userGroup.GET("/ping", userCtrl.Ping)
 		userGroup.POST("", userCtrl.CreateUserHandler)
-		userGroup.GET("/:email", userCtrl.ReadUserHandler)
+		userGroup.GET(":email", userCtrl.ReadUserHandler)
+		userGroup.GET("read", userCtrl.ReadUsersHandler)
 	}
 }

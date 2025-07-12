@@ -51,3 +51,10 @@ func ValidateReadUserDTO(c *gin.Context) (*dto.ReadUserDTO, error) {
 
 	return &input, nil
 }
+
+// ValidateReadUsersDTO binds optional query parameters for reading users
+func ValidateReadUsersDTO(c *gin.Context) *dto.ReadUsersDTO {
+	var input dto.ReadUsersDTO
+	_ = c.ShouldBindQuery(&input)
+	return &input
+}

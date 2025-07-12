@@ -23,3 +23,7 @@ type ReadUserResponse struct {
 	UpdatedAt  time.Time                         `json:"updated_at"`
 	Enterprise enterprise.ReadEnterpriseResponse `json:"enterprise"`
 }
+
+type ReadUsersResponse struct {
+	Users []ReadUserResponse `json:"users"`
+}

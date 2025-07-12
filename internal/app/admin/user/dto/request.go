@@ -12,3 +12,8 @@ type CreateUserDTO struct {
 type ReadUserDTO struct {
 	Email string `uri:"email" binding:"required"`
 }
+
+type ReadUsersDTO struct {
+	Page  int `form:"page" binding:"omitempty"`
+	Limit int `form:"limit" binding:"omitempty"`
+}

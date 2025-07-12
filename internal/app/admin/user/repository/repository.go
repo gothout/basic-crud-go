@@ -7,5 +7,6 @@ import (
 
 type UserRepository interface {
 	Create(ctx context.Context, enterpriseId int64, number, firstName, lastName, email, password string) (*model.User, error)
+	ReadAll(ctx context.Context, page, limit int) ([]model.UserExtend, error)
 	Read(ctx context.Context, email string) (*model.User, error)
 }

@@ -8,10 +8,9 @@ import (
 	"basic-crud-go/internal/app/admin/user/util"
 	"basic-crud-go/internal/configuration/rest_err"
 	"fmt"
+	"github.com/gin-gonic/gin"
 	"net/http"
 	"strings"
-
-	"github.com/gin-gonic/gin"
 )
 
 type userController struct {
@@ -71,11 +70,13 @@ func (c *userController) CreateUserHandler(ctx *gin.Context) {
 		ctx.JSON(restErr.Code, restErr)
 		return
 	}
+	var Cnpj string = util.RemoveNonDigits(req.Cnpj)
+	var Number string = util.RemoveNonDigits(req.Number)
 
 	// Create user
 	created, err := c.service.Create(ctx,
-		util.RemoveNonDigits(req.Cnpj),
-		util.RemoveNonDigits(req.Number),
+		Cnpj,
+		Number,
 		req.FirstName,
 		req.LastName,
 		req.Email,
@@ -93,10 +94,60 @@ func (c *userController) CreateUserHandler(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusOK, &dto.CreateUserResponse{
-		Cnpj:      req.Cnpj,
+		Cnpj:      Cnpj,
 		FirstName: created.FirstName,
 		LastName:  created.LastName,
 		Email:     created.Email,
+		Number:    created.Number,
+	})
+}
+
+// ReadUsers godoc
+// @Summary      List users
+// @Description  Retrieve a paginated list of users
+// @Tags         User
+// @Accept       json
+// @Produce      json
+// @Param        page   query     int     false   "Page number (min 1)"
+// @Param        limit  query     int     false   "Items per page (default: 10)"
+// @Success      200    {object}  dto.ReadUsersResponse
+// @Failure      400    {object}  rest_err.RestErr
+// @Failure      404    {object}  rest_err.RestErr
+// @Failure      500    {object}  rest_err.RestErr
+// @Router       /user/v1/read [get]
+func (c *userController) ReadUsersHandler(ctx *gin.Context) {
+	req := binding.ValidateReadUsersDTO(ctx)
+
+	users, err := c.service.ReadAll(ctx, req.Page, req.Limit)
+	if err != nil {
+		restErr := rest_err.NewInternalServerError("failed to fetch users", []rest_err.Causes{
+			rest_err.NewCause("read users", "error"),
+		})
+		ctx.JSON(restErr.Code, restErr)
+		return
+	}
+
+	var result []dto.ReadUserResponse
+	for _, ent := range users {
+		result = append(result, dto.ReadUserResponse{
+			Id:        ent.Id,
+			FirstName: ent.FirstName,
+			LastName:  ent.LastName,
+			Email:     ent.Email,
+			Number:    ent.Number,
+			CreatedAt: ent.CreatedAt,
+			UpdatedAt: ent.UpdatedAt,
+			Enterprise: entepriseDto.ReadEnterpriseResponse{
+				Name:      ent.Enterprise.Name,
+				Cnpj:      ent.Enterprise.Cnpj,
+				CreatedAt: ent.Enterprise.CreateAt,
+				UpdatedAt: ent.Enterprise.UpdateAt,
+			},
+		})
+	}
+
+	ctx.JSON(http.StatusOK, dto.ReadUsersResponse{
+		Users: result,
 	})
 }
 

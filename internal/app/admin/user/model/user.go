@@ -1,6 +1,9 @@
 package model
 
-import "time"
+import (
+	entModel "basic-crud-go/internal/app/admin/enterprise/model"
+	"time"
+)
 
 type User struct {
 	Id           string
@@ -12,4 +15,9 @@ type User struct {
 	Password     string
 	CreatedAt    time.Time
 	UpdatedAt    time.Time
+}
+
+type UserExtend struct {
+	User
+	Enterprise entModel.Enterprise
 }

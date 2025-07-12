@@ -6,4 +6,5 @@ type UserController interface {
 	Ping(ctx *gin.Context)
 	CreateUserHandler(ctx *gin.Context)
 	ReadUserHandler(ctx *gin.Context)
+	ReadUsersHandler(ctx *gin.Context)
 }
