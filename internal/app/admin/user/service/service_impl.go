@@ -3,12 +3,15 @@ package service
 import (
 	entModel "basic-crud-go/internal/app/admin/enterprise/model"
 	"basic-crud-go/internal/app/admin/enterprise/service"
+	"basic-crud-go/internal/app/admin/user/dto"
 	"basic-crud-go/internal/app/admin/user/model"
 	"basic-crud-go/internal/app/admin/user/repository"
 	util "basic-crud-go/internal/app/util/password"
 	"basic-crud-go/internal/configuration/logger"
 	"context"
 	"fmt"
+	"strings"
+	"time"
 )
 
 const module = "User-Service"
@@ -79,6 +82,84 @@ func (s *userService) Read(ctx context.Context, email string) (*model.User, *ent
 	}
 	enterprise, err := s.enterpriseService.ReadById(ctx, user.EnterpriseId)
 	if err != nil {
+		return nil, nil, err
+	}
+
+	return user, enterprise, nil
+}
+
+func (s *userService) Update(ctx context.Context, dto dto.UpdateUserDTO) (*model.User, *entModel.Enterprise, error) {
+	const method = "Update"
+
+	// Fetch user and enterprise via service
+	existingUser, enterprise, err := s.Read(ctx, dto.Email)
+	if err != nil {
+		logger.Log(logger.Info, module, method, fmt.Errorf("user or enterprise not found: %w", err))
+		return nil, nil, fmt.Errorf("user not found")
+	}
+
+	// Prepare updatedUser from existing
+	updatedUser := model.User{
+		Id:           existingUser.Id,
+		EnterpriseId: existingUser.EnterpriseId,
+		Number:       existingUser.Number,
+		FirstName:    existingUser.FirstName,
+		LastName:     existingUser.LastName,
+		Email:        existingUser.Email,
+		Password:     existingUser.Password,
+		CreatedAt:    existingUser.CreatedAt,
+		UpdatedAt:    time.Now(),
+	}
+
+	// FirstName
+	if strings.TrimSpace(dto.FirstName) != "" && dto.FirstName != existingUser.FirstName {
+		logger.Log(logger.Info, module, method, fmt.Errorf("updating first name to: %s", dto.FirstName))
+		updatedUser.FirstName = dto.FirstName
+	}
+
+	// LastName
+	if strings.TrimSpace(dto.LastName) != "" && dto.LastName != existingUser.LastName {
+		logger.Log(logger.Info, module, method, fmt.Errorf("updating last name to: %s", dto.LastName))
+		updatedUser.LastName = dto.LastName
+	}
+
+	// EmailUpdated
+	if strings.TrimSpace(dto.EmailUpdated) != "" && dto.EmailUpdated != existingUser.Email {
+		logger.Log(logger.Info, module, method, fmt.Errorf("updating email to: %s", dto.EmailUpdated))
+		updatedUser.Email = dto.EmailUpdated
+	}
+
+	// Number
+	if strings.TrimSpace(dto.Number) != "" && dto.Number != existingUser.Number {
+		logger.Log(logger.Info, module, method, fmt.Errorf("updating number to: %s", dto.Number))
+		updatedUser.Number = dto.Number
+	}
+
+	// Password
+	if strings.TrimSpace(dto.Password) != "" {
+		logger.Log(logger.Info, module, method, fmt.Errorf("received password input"))
+
+		if err := util.Compare(existingUser.Password, dto.Password); err != nil {
+			logger.Log(logger.Info, module, method, fmt.Errorf("password is different, hashing new one"))
+
+			passwordHash, err := util.Hash(dto.Password)
+			if err != nil {
+				logger.Log(logger.Error, module, method, fmt.Errorf("failed to hash password: %w", err))
+				return nil, nil, fmt.Errorf("failed to hash password: %w", err)
+			}
+			updatedUser.Password = passwordHash
+		} else {
+			logger.Log(logger.Info, module, method, fmt.Errorf("password is the same, keeping hash"))
+		}
+	} else {
+		logger.Log(logger.Info, module, method, fmt.Errorf("password is empty, keeping current"))
+		updatedUser.Password = existingUser.Password
+	}
+
+	// Save updated user
+	user, err := s.repo.Update(ctx, updatedUser)
+	if err != nil {
+		logger.Log(logger.Error, module, method, fmt.Errorf("failed to update user: %w", err))
 		return nil, nil, err
 	}
 

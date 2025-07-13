@@ -30,5 +30,6 @@ func RegisterUserRoutes(router *gin.RouterGroup) {
 		userGroup.POST("", userCtrl.CreateUserHandler)
 		userGroup.GET(":email", userCtrl.ReadUserHandler)
 		userGroup.GET("read", userCtrl.ReadUsersHandler)
+		userGroup.PUT(":email", userCtrl.UpdateUserHandler)
 	}
 }

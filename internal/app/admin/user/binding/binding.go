@@ -58,3 +58,38 @@ func ValidateReadUsersDTO(c *gin.Context) *dto.ReadUsersDTO {
 	_ = c.ShouldBindQuery(&input)
 	return &input
 }
+
+// ValidateUpdateUserDTO binds optional query parameters for update user
+func ValidateUpdateUserDTO(c *gin.Context) (*dto.UpdateUserDTO, error) {
+	var input dto.UpdateUserDTO
+
+	// Bind path param (email)
+	if err := c.ShouldBindUri(&input); err != nil {
+		return nil, errors.New("email (from URI) is required")
+	}
+
+	// Bind body JSON
+	if err := c.ShouldBindJSON(&input); err != nil {
+		return nil, errors.New("invalid or missing JSON body")
+	}
+
+	// Validate email from URI
+	if !util.IsEmailValid(input.Email) {
+		return nil, fmt.Errorf("invalid email address (uri): %s", input.Email)
+	}
+
+	// Validate updated email (if provided)
+	if input.EmailUpdated != "" && !util.IsEmailValid(input.EmailUpdated) {
+		return nil, fmt.Errorf("invalid email address (new): %s", input.EmailUpdated)
+	}
+
+	// Validate phone (if provided)
+	if input.Number != "" && !util.IsPhoneValid(input.Number) {
+		return nil, fmt.Errorf("invalid phone number: %s", input.Number)
+	}
+
+	// sanit number
+	input.Number = util.RemoveNonDigits(input.Number)
+
+	return &input, nil
+}

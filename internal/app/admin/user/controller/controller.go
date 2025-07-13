@@ -7,4 +7,5 @@ type UserController interface {
 	CreateUserHandler(ctx *gin.Context)
 	ReadUserHandler(ctx *gin.Context)
 	ReadUsersHandler(ctx *gin.Context)
+	UpdateUserHandler(ctx *gin.Context)
 }

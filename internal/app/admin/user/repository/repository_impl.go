@@ -131,7 +131,7 @@ func (r *userRepositoryImpl) ReadAll(ctx context.Context, page, limit int) ([]mo
 func (r *userRepositoryImpl) Read(ctx context.Context, email string) (*model.User, error) {
 	var user model.User
 	query := `
-		SELECT id, enterprise_id, number, first_name, last_name, email, created_at, updated_at
+		SELECT id, enterprise_id, number, first_name, last_name, email, password, created_at, updated_at
 		FROM "user"
 		WHERE email = $1
 		LIMIT 1;
@@ -143,6 +143,7 @@ func (r *userRepositoryImpl) Read(ctx context.Context, email string) (*model.Use
 		&user.FirstName,
 		&user.LastName,
 		&user.Email,
+		&user.Password,
 		&user.CreatedAt,
 		&user.UpdatedAt,
 	)
@@ -155,4 +156,49 @@ func (r *userRepositoryImpl) Read(ctx context.Context, email string) (*model.Use
 		return &model.User{}, err
 	}
 	return &user, nil
+}
+
+// Update user by Id
+func (r *userRepositoryImpl) Update(ctx context.Context, user model.User) (*model.User, error) {
+	query := `
+		UPDATE "user"
+		SET
+			number = $1,
+			first_name = $2,
+			last_name = $3,
+			email = $4,
+			password = $5,
+			updated_at = $6
+		WHERE id = $7
+		RETURNING id, enterprise_id, number, first_name, last_name, email, password, created_at, updated_at;
+	`
+
+	row := r.db.QueryRowContext(ctx, query,
+		user.Number,
+		user.FirstName,
+		user.LastName,
+		user.Email,
+		user.Password,
+		user.UpdatedAt,
+		user.Id,
+	)
+
+	var updatedUser model.User
+	err := row.Scan(
+		&updatedUser.Id,
+		&updatedUser.EnterpriseId,
+		&updatedUser.Number,
+		&updatedUser.FirstName,
+		&updatedUser.LastName,
+		&updatedUser.Email,
+		&updatedUser.Password,
+		&updatedUser.CreatedAt,
+		&updatedUser.UpdatedAt,
+	)
+	if err != nil {
+		logger.Log(logger.Error, module, "Update", err)
+		return nil, err
+	}
+
+	return &updatedUser, nil
 }

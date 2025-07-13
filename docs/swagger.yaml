@@ -125,6 +125,26 @@ definitions:
       updatedAt:
         type: string
     type: object
+  dto.UpdateUserDTO:
+    properties:
+      email:
+        type: string
+      first_name:
+        type: string
+      last_name:
+        type: string
+      number:
+        type: string
+      password:
+        type: string
+    required:
+    - email
+    type: object
+  dto.UpdateUserResponse:
+    properties:
+      updated:
+        $ref: '#/definitions/dto.ReadUserResponse'
+    type: object
   rest_err.Causes:
     properties:
       field:
@@ -378,6 +398,44 @@ paths:
           schema:
             $ref: '#/definitions/rest_err.RestErr'
       summary: Read user
+      tags:
+      - User
+    put:
+      consumes:
+      - application/json
+      description: Update user by email (URI param) and update fields from body
+      parameters:
+      - description: User email
+        in: path
+        name: email
+        required: true
+        type: string
+      - description: User update data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UpdateUserDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.UpdateUserResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/rest_err.RestErr'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/rest_err.RestErr'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/rest_err.RestErr'
+      summary: Update user
       tags:
       - User
   /user/v1/ping:

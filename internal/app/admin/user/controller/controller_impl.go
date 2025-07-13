@@ -202,3 +202,63 @@ func (c *userController) ReadUserHandler(ctx *gin.Context) {
 	})
 
 }
+
+// UpdateUser godoc
+// @Summary      Update user
+// @Description  Update user by email (URI param) and update fields from body
+// @Tags         User
+// @Accept       json
+// @Produce      json
+// @Param        email    path      string              true  "User email"
+// @Param        request  body      dto.UpdateUserDTO   true  "User update data"
+// @Success      200      {object}  dto.UpdateUserResponse
+// @Failure      400      {object}  rest_err.RestErr
+// @Failure      404      {object}  rest_err.RestErr
+// @Failure      500      {object}  rest_err.RestErr
+// @Router       /user/v1/{email} [put]
+func (c *userController) UpdateUserHandler(ctx *gin.Context) {
+	req, err := binding.ValidateUpdateUserDTO(ctx)
+	if err != nil {
+		restErr := rest_err.NewBadRequestValidationError("invalid request", []rest_err.Causes{
+			rest_err.NewCause("validation", err.Error()),
+		})
+		ctx.JSON(restErr.Code, restErr)
+		return
+	}
+
+	updatedUser, enterprise, err := c.service.Update(ctx, *req)
+	if err != nil && strings.Contains(err.Error(), "not found") {
+		restErr := rest_err.NewNotFoundError(fmt.Sprintf("user %s not found", req.Email))
+		ctx.JSON(restErr.Code, restErr)
+		return
+	}
+
+	if err != nil && strings.Contains(err.Error(), "user_email_key") {
+		restErr := rest_err.NewBadRequestError(fmt.Sprintf("it is not possible to update to this new email %s", req.Email))
+		ctx.JSON(restErr.Code, restErr)
+		return
+	}
+	if err != nil {
+		restErr := rest_err.NewInternalServerError("failed to update user", nil)
+		ctx.JSON(restErr.Code, restErr)
+		return
+	}
+
+	ctx.JSON(http.StatusOK, &dto.UpdateUserResponse{
+		UpdatedUser: dto.ReadUserResponse{
+			Id:        updatedUser.Id,
+			FirstName: updatedUser.FirstName,
+			LastName:  updatedUser.LastName,
+			Email:     updatedUser.Email,
+			Number:    updatedUser.Number,
+			CreatedAt: updatedUser.CreatedAt,
+			UpdatedAt: updatedUser.UpdatedAt,
+			Enterprise: entepriseDto.ReadEnterpriseResponse{
+				Name:      enterprise.Name,
+				Cnpj:      enterprise.Cnpj,
+				CreatedAt: enterprise.CreateAt,
+				UpdatedAt: enterprise.UpdateAt,
+			},
+		},
+	})
+}

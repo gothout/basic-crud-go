@@ -27,3 +27,7 @@ type ReadUserResponse struct {
 type ReadUsersResponse struct {
 	Users []ReadUserResponse `json:"users"`
 }
+
+type UpdateUserResponse struct {
+	UpdatedUser ReadUserResponse `json:"updated"`
+}
