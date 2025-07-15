@@ -17,6 +17,11 @@ type ReadUsersDTO struct {
 	Page  int `form:"page" binding:"omitempty"`
 	Limit int `form:"limit" binding:"omitempty"`
 }
+type ReadUsersByCnpjDTO struct {
+	Cnpj  string `form:"cnpj" binding:"required"`
+	Page  int    `form:"page" binding:"omitempty"`
+	Limit int    `form:"limit" binding:"omitempty"`
+}
 
 type UpdateUserDTO struct {
 	Email        string `uri:"email" binding:"required"`

@@ -136,6 +136,71 @@ func (c *userController) ReadUsersHandler(ctx *gin.Context) {
 	})
 }
 
+// ReadUsers godoc
+// @Summary      List users by CNPJ
+// @Description  Retrieve a paginated list of users
+// @Tags         User
+// @Accept       json
+// @Produce      json
+// @Param        cnpj   query     string  true    "CNPJ enterprise"
+// @Param        page   query     int     false   "Page number (min 1)"
+// @Param        limit  query     int     false   "Items per page (default: 10)"
+// @Success      200    {object}  dto.ReadUsersResponse
+// @Failure      400    {object}  rest_err.RestErr
+// @Failure      404    {object}  rest_err.RestErr
+// @Failure      500    {object}  rest_err.RestErr
+// @Router       /user/v1/read/enterprise [get]
+func (c *userController) ReadUsersByCnpjHandler(ctx *gin.Context) {
+	req, err := binding.ValidateReadUsersByCnpjDTO(ctx)
+	// Validate DTO
+	if err != nil {
+		restErr := rest_err.NewBadRequestValidationError("Invalid request body", []rest_err.Causes{
+			rest_err.NewCause("validation", err.Error()),
+		})
+		ctx.JSON(restErr.Code, restErr)
+		return
+	}
+
+	users, err := c.service.ReadByCnpj(ctx, req.Cnpj, req.Page, req.Limit)
+
+	if err != nil {
+		if strings.Contains(err.Error(), "nao encontrada") {
+			restErr := rest_err.NewNotFoundError(fmt.Sprintf("enterprise %s not found", req.Cnpj))
+			ctx.JSON(restErr.Code, restErr)
+			return
+		}
+
+		restErr := rest_err.NewInternalServerError("failed to fetch users", []rest_err.Causes{
+			rest_err.NewCause("read users", err.Error()),
+		})
+		ctx.JSON(restErr.Code, restErr)
+		return
+	}
+
+	var result []dto.ReadUserResponse
+	for _, ent := range users {
+		result = append(result, dto.ReadUserResponse{
+			Id:        ent.Id,
+			FirstName: ent.FirstName,
+			LastName:  ent.LastName,
+			Email:     ent.Email,
+			Number:    ent.Number,
+			CreatedAt: ent.CreatedAt,
+			UpdatedAt: ent.UpdatedAt,
+			Enterprise: entepriseDto.ReadEnterpriseResponse{
+				Name:      ent.Enterprise.Name,
+				Cnpj:      ent.Enterprise.Cnpj,
+				CreatedAt: ent.Enterprise.CreateAt,
+				UpdatedAt: ent.Enterprise.UpdateAt,
+			},
+		})
+	}
+
+	ctx.JSON(http.StatusOK, dto.ReadUsersResponse{
+		Users: result,
+	})
+}
+
 // ReadUser godoc
 // @Summary      Read user
 // @Description  Read user by email

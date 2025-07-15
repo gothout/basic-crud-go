@@ -105,3 +105,22 @@ func ValidateDeleteUserDTO(c *gin.Context) (*dto.DeleteUserDTO, error) {
 
 	return &input, nil
 }
+
+func ValidateReadUsersByCnpjDTO(c *gin.Context) (*dto.ReadUsersByCnpjDTO, error) {
+	var input dto.ReadUsersByCnpjDTO
+
+	if err := c.ShouldBindQuery(&input); err != nil {
+		return nil, errors.New("invalid parameters in query")
+	}
+
+	if input.Cnpj == "" {
+		return nil, errors.New("cnpj is required")
+	}
+
+	if err := util.ValidateCNPJ(input.Cnpj); err != nil {
+		return nil, err
+	}
+	input.Cnpj = util.RemoveNonDigits(input.Cnpj)
+
+	return &input, nil
+}

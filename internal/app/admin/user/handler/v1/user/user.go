@@ -29,6 +29,7 @@ func RegisterUserRoutes(router *gin.RouterGroup) {
 		userGroup.POST("", userCtrl.CreateUserHandler)
 		userGroup.GET(":email", userCtrl.ReadUserHandler)
 		userGroup.GET("read", userCtrl.ReadUsersHandler)
+		userGroup.GET("read/enterprise", userCtrl.ReadUsersByCnpjHandler)
 		userGroup.PUT(":email", userCtrl.UpdateUserHandler)
 		userGroup.DELETE(":email", userCtrl.DeleteUserHandler)
 	}

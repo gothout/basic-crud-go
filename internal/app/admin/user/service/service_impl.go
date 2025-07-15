@@ -9,6 +9,8 @@ import (
 	util "basic-crud-go/internal/app/util/password"
 	"basic-crud-go/internal/configuration/logger"
 	"context"
+	"database/sql"
+	"errors"
 	"fmt"
 	"strings"
 	"time"
@@ -67,6 +69,35 @@ func (s *userService) ReadAll(ctx context.Context, page, limit int) ([]model.Use
 	}
 
 	users, err := s.repo.ReadAll(ctx, page, limit)
+	if err != nil {
+		return nil, err
+	}
+
+	return users, nil
+}
+
+func (s *userService) ReadByCnpj(ctx context.Context, cnpj string, page, limit int) ([]model.UserExtend, error) {
+	var users []model.UserExtend
+
+	if page < 1 {
+		logger.LogWithAutoFuncName(logger.Info, module, "page out of range. Defaulting to 1.")
+		page = 1
+	}
+
+	if limit <= 0 || limit > 10 {
+		logger.LogWithAutoFuncName(logger.Info, module, "limit out of range. Defaulting to 10.")
+		limit = 10
+	}
+
+	enterprise, err := s.enterpriseService.Read(ctx, cnpj)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, fmt.Errorf("enterprise not found")
+		}
+		return nil, err
+	}
+
+	users, err = s.repo.ReadUsersByEnterpriseID(ctx, enterprise.Id, page, limit)
 	if err != nil {
 		return nil, err
 	}
