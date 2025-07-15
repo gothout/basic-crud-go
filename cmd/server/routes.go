@@ -16,5 +16,6 @@ func RegisterRoutes(router *gin.Engine) {
 }
 
 func InitSwagger(router *gin.Engine) {
+	router.StaticFS("/docs", gin.Dir("./docs", true))
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 }

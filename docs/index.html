@@ -1,0 +1,40 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>📘 Documentação da API - Basic Crud</title>
+    <script type="module" src="https://unpkg.com/rapidoc/dist/rapidoc-min.js"></script>
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', Roboto, sans-serif;
+            background-color: #121212;
+        }
+        rapi-doc::part(navbar) {
+            background: #1e1e1e;
+        }
+    </style>
+</head>
+<body>
+<rapi-doc
+        spec-url="./swagger.json"
+        theme="dark"
+        render-style="focused"
+        show-header="true"
+        show-info="true"
+        show-components="true"
+        use-path-in-nav-bar="true"
+        layout="row"
+        allow-authentication="true"
+        allow-spec-url-load="false"
+        allow-spec-file-load="false"
+        heading-text="📘 Basic Crud - API Admin"
+        primary-color="#4dabf7"
+        regular-font="Segoe UI"
+        font-size="large"
+        show-method-in-nav-bar="as-colored-text"
+        default-schema-tab="schema"
+>
+</rapi-doc>
+</body>
+</html>
