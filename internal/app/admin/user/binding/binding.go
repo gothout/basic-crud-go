@@ -93,3 +93,15 @@ func ValidateUpdateUserDTO(c *gin.Context) (*dto.UpdateUserDTO, error) {
 
 	return &input, nil
 }
+func ValidateDeleteUserDTO(c *gin.Context) (*dto.DeleteUserDTO, error) {
+	var input dto.DeleteUserDTO
+	// Bind path param
+	if err := c.ShouldBindUri(&input); err != nil {
+		return nil, errors.New("email is required")
+	}
+	if !util.IsEmailValid(input.Email) {
+		return nil, fmt.Errorf("invalid email address: %s", input.Email)
+	}
+
+	return &input, nil
+}

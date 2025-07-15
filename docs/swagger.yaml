@@ -257,21 +257,6 @@ paths:
       summary: Delete enterprise
       tags:
       - Enterprise
-  /enterprise/v1/ping:
-    get:
-      description: Retorna um pong para verificar se o serviço enterprise está ativo
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            additionalProperties:
-              type: string
-            type: object
-      summary: Healthcheck do Enterprise
-      tags:
-      - Enterprise
   /enterprise/v1/read:
     get:
       consumes:
@@ -368,6 +353,36 @@ paths:
       tags:
       - User
   /user/v1/{email}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete user by email
+      parameters:
+      - description: User email
+        in: path
+        name: email
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/rest_err.RestErr'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/rest_err.RestErr'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/rest_err.RestErr'
+      summary: Delete user
+      tags:
+      - User
     get:
       consumes:
       - application/json
@@ -436,21 +451,6 @@ paths:
           schema:
             $ref: '#/definitions/rest_err.RestErr'
       summary: Update user
-      tags:
-      - User
-  /user/v1/ping:
-    get:
-      description: Retorna um pong para verificar se o serviço User está ativo
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            additionalProperties:
-              type: string
-            type: object
-      summary: Healthcheck do User
       tags:
       - User
   /user/v1/read:

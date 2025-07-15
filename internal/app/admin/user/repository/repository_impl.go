@@ -5,6 +5,7 @@ import (
 	"basic-crud-go/internal/configuration/logger"
 	"context"
 	"database/sql"
+	"fmt"
 )
 
 const module string = "User-Repository"
@@ -201,4 +202,21 @@ func (r *userRepositoryImpl) Update(ctx context.Context, user model.User) (*mode
 	}
 
 	return &updatedUser, nil
+}
+
+func (r *userRepositoryImpl) Delete(ctx context.Context, id string) (bool, error) {
+	query := `
+		DELETE FROM "user" WHERE id = $1 RETURNING true;
+	`
+
+	var ok bool
+	err := r.db.QueryRowContext(ctx, query, id).Scan(&ok)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return false, fmt.Errorf("user not found")
+		}
+		logger.Log(logger.Error, module, "Delete", err)
+		return false, err
+	}
+	return true, nil
 }

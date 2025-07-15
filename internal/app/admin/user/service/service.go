@@ -13,4 +13,5 @@ type UserService interface {
 	ReadAll(ctx context.Context, page, limit int) ([]model.UserExtend, error)
 	Read(ctx context.Context, email string) (*model.User, *entModel.Enterprise, error)
 	Update(ctx context.Context, dto dto.UpdateUserDTO) (*model.User, *entModel.Enterprise, error)
+	Delete(ctx context.Context, email string) (bool, error)
 }

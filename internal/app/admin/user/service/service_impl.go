@@ -165,3 +165,18 @@ func (s *userService) Update(ctx context.Context, dto dto.UpdateUserDTO) (*model
 
 	return user, enterprise, nil
 }
+
+func (s *userService) Delete(ctx context.Context, email string) (bool, error) {
+	user, err := s.repo.Read(ctx, email)
+
+	if err != nil {
+		return false, err
+	}
+
+	_, err = s.repo.Delete(ctx, user.Id)
+	if err != nil {
+		return false, fmt.Errorf("failed to delete user: %w", err)
+	}
+
+	return true, nil
+}

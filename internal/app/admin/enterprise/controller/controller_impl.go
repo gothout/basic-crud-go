@@ -21,21 +21,6 @@ func NewEnterpriseController(s service.EnterpriseService) EnterpriseController {
 	}
 }
 
-// Ping godoc
-// @Summary      Healthcheck do Enterprise
-// @Description  Retorna um pong para verificar se o serviço enterprise está ativo
-// @Tags         Enterprise
-// @Produce      json
-// @Success      200  {object}  map[string]string
-// @Router       /enterprise/v1/ping [get]
-func (c *enterpriseController) Ping(ctx *gin.Context) {
-	result, _ := c.service.Ping(ctx.Request.Context())
-
-	ctx.JSON(http.StatusOK, gin.H{
-		"message": result,
-	})
-}
-
 // CreateEnterpriseHandler godoc
 // @Summary 			Create enterprise
 // @Description 		Create enterprise by CNPJ and name

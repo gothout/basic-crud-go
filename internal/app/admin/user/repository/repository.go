@@ -10,4 +10,5 @@ type UserRepository interface {
 	ReadAll(ctx context.Context, page, limit int) ([]model.UserExtend, error)
 	Read(ctx context.Context, email string) (*model.User, error)
 	Update(ctx context.Context, user model.User) (*model.User, error)
+	Delete(ctx context.Context, id string) (bool, error)
 }

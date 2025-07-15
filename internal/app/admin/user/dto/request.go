@@ -26,3 +26,7 @@ type UpdateUserDTO struct {
 	Number       string `json:"number" binding:"omitempty"`
 	Password     string `json:"password" binding:"omitempty"`
 }
+
+type DeleteUserDTO struct {
+	Email string `uri:"email" binding:"required"`
+}

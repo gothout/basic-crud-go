@@ -26,10 +26,10 @@ func RegisterUserRoutes(router *gin.RouterGroup) {
 	// Routes
 	userGroup := router.Group("/")
 	{
-		userGroup.GET("/ping", userCtrl.Ping)
 		userGroup.POST("", userCtrl.CreateUserHandler)
 		userGroup.GET(":email", userCtrl.ReadUserHandler)
 		userGroup.GET("read", userCtrl.ReadUsersHandler)
 		userGroup.PUT(":email", userCtrl.UpdateUserHandler)
+		userGroup.DELETE(":email", userCtrl.DeleteUserHandler)
 	}
 }

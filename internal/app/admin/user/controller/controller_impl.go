@@ -23,21 +23,6 @@ func NewUserController(s service.UserService) UserController {
 	}
 }
 
-// Ping godoc
-// @Summary      Healthcheck do User
-// @Description  Retorna um pong para verificar se o serviço User está ativo
-// @Tags         User
-// @Produce      json
-// @Success      200  {object}  map[string]string
-// @Router       /user/v1/ping [get]
-func (c *userController) Ping(ctx *gin.Context) {
-	result, _ := c.service.Ping(ctx.Request.Context())
-
-	ctx.JSON(http.StatusOK, gin.H{
-		"message": result,
-	})
-}
-
 // CreateUserHandler godoc
 // @Summary      Create user
 // @Description  Create user by CNPJ, name and email
@@ -261,4 +246,41 @@ func (c *userController) UpdateUserHandler(ctx *gin.Context) {
 			},
 		},
 	})
+}
+
+// DeleteUser godoc
+// @Summary      Delete user
+// @Description  Delete user by email
+// @Tags         User
+// @Accept       json
+// @Produce      json
+// @Param        email 	   path     string  true "User email"
+// @Success      204
+// @Failure      400      {object}  rest_err.RestErr
+// @Failure		 404	  {object}	rest_err.RestErr
+// @Failure      500      {object}  rest_err.RestErr
+// @Router       /user/v1/{email} [delete]
+func (c *userController) DeleteUserHandler(ctx *gin.Context) {
+	req, err := binding.ValidateDeleteUserDTO(ctx)
+	if err != nil {
+		restErr := rest_err.NewBadRequestValidationError("invalid request body", []rest_err.Causes{
+			rest_err.NewCause("validation", err.Error()),
+		})
+		ctx.JSON(restErr.Code, restErr)
+		return
+	}
+
+	// read user
+	_, err = c.service.Delete(ctx, req.Email)
+	if err != nil && strings.Contains(err.Error(), "user not found") {
+		restErr := rest_err.NewNotFoundError(fmt.Sprintf("user %s not found", req.Email))
+		ctx.JSON(restErr.Code, restErr)
+		return
+	}
+	if err != nil {
+		restErr := rest_err.NewInternalServerError("error delete user", nil)
+		ctx.JSON(restErr.Code, restErr)
+		return
+	}
+	ctx.JSON(http.StatusNoContent, nil)
 }
