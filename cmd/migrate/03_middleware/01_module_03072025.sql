@@ -1,9 +1,8 @@
-CREATE TABLE IF NOT EXISTS module (
+CREATE TABLE IF NOT EXISTS admin_module (
     id SERIAL PRIMARY KEY,
     name VARCHAR(100) NOT NULL UNIQUE
 );
-INSERT INTO module (name) VALUES
+INSERT INTO admin_module (name) VALUES
 ('admin'),
-('enterprise'),
-('user')
+('enterprise')
 ON CONFLICT DO NOTHING;
