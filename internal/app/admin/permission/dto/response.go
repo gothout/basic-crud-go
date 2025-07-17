@@ -6,3 +6,7 @@ type ReadPermissionResponse struct {
 	Name    string                   `json:"name"`
 	Actions []model.PermissionAction `json:"actions"`
 }
+
+type ReadPermissionsResponse struct {
+	Permissions []string `json:"permissions"`
+}

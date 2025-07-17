@@ -55,3 +55,35 @@ func (c *permissionControllerImpl) Read(ctx *gin.Context) {
 		Actions: mod.Actions,
 	})
 }
+
+// ReadAll godoc
+// @Summary      Read permissions
+// @Description  Retrieve a paginated list of permissionss names
+// @Tags         Permission
+// @Accept       json
+// @Produce      json
+// @Param        page   query     int     false   "Page number (min 1)"
+// @Param        limit  query     int     false   "Items per page (default: 10)"
+// @Success      200   {object}  dto.ReadPermissionsResponse
+// @Failure      400   {object}  rest_err.RestErr
+// @Failure      500   {object}  rest_err.RestErr
+// @Router       /permission/v1/ [get]
+func (c *permissionControllerImpl) ReadAll(ctx *gin.Context) {
+	req := binding.ValidatePermissionsDTO(ctx)
+
+	mods, err := c.service.ReadAll(ctx, req.Page, req.Limit)
+	if err != nil {
+		restErr := rest_err.NewInternalServerError("error fetching permissions", nil)
+		ctx.JSON(restErr.Code, restErr)
+		return
+	}
+
+	var names []string
+	for _, mod := range mods {
+		names = append(names, mod.Name)
+	}
+
+	ctx.JSON(http.StatusOK, &dto.ReadPermissionsResponse{
+		Permissions: names,
+	})
+}

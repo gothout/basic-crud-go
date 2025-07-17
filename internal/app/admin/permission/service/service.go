@@ -7,4 +7,5 @@ import (
 
 type PermissionService interface {
 	Read(ctx context.Context, name string) (*model.ModulePermission, error)
+	ReadAll(ctx context.Context, page, limit int) ([]model.ModulePermission, error)
 }

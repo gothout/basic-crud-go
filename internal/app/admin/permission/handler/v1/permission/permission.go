@@ -18,5 +18,6 @@ func RegisterPermissionRoutes(router *gin.RouterGroup) {
 	group := router.Group("/")
 	{
 		group.GET("read/:name", ctrl.Read)
+		group.GET("", ctrl.ReadAll)
 	}
 }

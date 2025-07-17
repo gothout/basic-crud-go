@@ -408,6 +408,55 @@ const docTemplate = `{
                 }
             }
         },
+        "/permission/v1/": {
+            "get": {
+                "description": "Retrieve a paginated list of permissionss names",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Permission"
+                ],
+                "summary": "Read permissions",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Page number (min 1)",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Items per page (default: 10)",
+                        "name": "limit",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ReadPermissionsResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/rest_err.RestErr"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/rest_err.RestErr"
+                        }
+                    }
+                }
+            }
+        },
         "/permission/v1/read/{name}": {
             "get": {
                 "description": "Read permission by name",
@@ -734,6 +783,17 @@ const docTemplate = `{
                 },
                 "name": {
                     "type": "string"
+                }
+            }
+        },
+        "dto.ReadPermissionsResponse": {
+            "type": "object",
+            "properties": {
+                "permissions": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
                 }
             }
         },

@@ -15,3 +15,10 @@ func ValidateReadPermissioDTO(c *gin.Context) (*dto.ReadPermissionDTO, error) {
 	}
 	return &input, nil
 }
+
+// ValidatePermissionsDTO binds optional query parameters for reading users
+func ValidatePermissionsDTO(c *gin.Context) *dto.ReadPermissionsDTO {
+	var input dto.ReadPermissionsDTO
+	_ = c.ShouldBindQuery(&input)
+	return &input
+}
