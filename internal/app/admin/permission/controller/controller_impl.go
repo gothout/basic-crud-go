@@ -55,3 +55,39 @@ func (c *permissionControllerImpl) ReadAll(ctx *gin.Context) {
 		Permissions: responses,
 	})
 }
+
+// Search godoc
+// @Summary      Search permissions
+// @Description  Search permissions by partial or full code name
+// @Tags         Permission
+// @Accept       json
+// @Produce      json
+// @Param        query   query     string     true   "Search query (min 4 characters)"
+// @Success      200   {object}  dto.ReadPermissionsResponse
+// @Failure      400   {object}  rest_err.RestErr
+// @Failure      500   {object}  rest_err.RestErr
+// @Router       /permission/v1/search [get]
+func (c *permissionControllerImpl) Search(ctx *gin.Context) {
+	req, err := binding.ValidateReadPermissionDTO(ctx)
+	if err != nil {
+		restErr := rest_err.NewBadRequestValidationError("invalid query", []rest_err.Causes{
+			rest_err.NewCause("validation", err.Error()),
+		})
+		ctx.JSON(restErr.Code, restErr)
+		return
+	}
+
+	perms, err := c.service.Search(ctx, req.Query)
+
+	var responses []dto.ReadPermissionResponse
+	for _, perm := range perms {
+		responses = append(responses, dto.ReadPermissionResponse{
+			Code:        perm.Code,
+			Description: perm.Description,
+		})
+	}
+
+	ctx.JSON(http.StatusOK, dto.ReadPermissionsResponse{
+		Permissions: responses,
+	})
+}

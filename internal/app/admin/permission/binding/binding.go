@@ -7,12 +7,19 @@ import (
 )
 
 // ValidateReadPermissioDTO read permission by name
-func ValidateReadPermissioDTO(c *gin.Context) (*dto.ReadPermissionDTO, error) {
+func ValidateReadPermissionDTO(c *gin.Context) (*dto.ReadPermissionDTO, error) {
 	var input dto.ReadPermissionDTO
-	// Bind path param
-	if err := c.ShouldBindUri(&input); err != nil {
-		return nil, errors.New("name is required")
+
+	// Faz o bind do query param "query"
+	if err := c.ShouldBindQuery(&input); err != nil {
+		return nil, errors.New("query parameter is required")
 	}
+
+	// Validação mínima manual
+	if len(input.Query) < 4 {
+		return nil, errors.New("query must be at least 4 characters")
+	}
+
 	return &input, nil
 }
 

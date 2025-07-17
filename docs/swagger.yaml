@@ -475,6 +475,35 @@ paths:
       summary: Read permissions
       tags:
       - Permission
+  /permission/v1/search:
+    get:
+      consumes:
+      - application/json
+      description: Search permissions by partial or full code name
+      parameters:
+      - description: Search query (min 4 characters)
+        in: query
+        name: query
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.ReadPermissionsResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/rest_err.RestErr'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/rest_err.RestErr'
+      summary: Search permissions
+      tags:
+      - Permission
   /user/v1/{email}:
     delete:
       consumes:

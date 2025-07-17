@@ -53,3 +53,37 @@ func (r *permissionRepositoryImpl) ReadAllPermissions(ctx context.Context, page,
 
 	return permissions, nil
 }
+
+func (r *permissionRepositoryImpl) Search(ctx context.Context, name string) ([]model.Permission, error) {
+	var permissions []model.Permission
+
+	query := `
+		SELECT id, code, description
+		FROM admin_permission
+		WHERE code ILIKE '%' || $1 || '%'
+		ORDER BY id ASC;
+	`
+
+	rows, err := r.db.QueryContext(ctx, query, name)
+	if err != nil {
+		logger.Log(logger.Error, module, "ReadByName", err)
+		return nil, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var perm model.Permission
+		if err := rows.Scan(&perm.ID, &perm.Code, &perm.Description); err != nil {
+			logger.Log(logger.Error, module, "ReadByName", err)
+			return nil, err
+		}
+		permissions = append(permissions, perm)
+	}
+
+	if err := rows.Err(); err != nil {
+		logger.Log(logger.Error, module, "ReadByName", err)
+		return nil, err
+	}
+
+	return permissions, nil
+}

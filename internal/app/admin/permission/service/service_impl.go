@@ -19,6 +19,15 @@ func NewPermissionService(repo repository.PermissionRepository) PermissionServic
 	}
 }
 
+func (s *permissionServiceImpl) Search(ctx context.Context, name string) ([]model.Permission, error) {
+	permissions, err := s.repo.Search(ctx, name)
+	if err != nil {
+		return nil, err
+	}
+
+	return permissions, nil
+}
+
 func (s *permissionServiceImpl) ReadAllPermissions(ctx context.Context, page, limit int) ([]model.Permission, error) {
 	if page < 1 {
 		logger.LogWithAutoFuncName(logger.Info, module, "page out of range. Defaulting to 1.")
