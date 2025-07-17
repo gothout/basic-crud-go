@@ -3,6 +3,7 @@ package server
 import (
 	_ "basic-crud-go/docs"
 	enterpriseHandler "basic-crud-go/internal/app/admin/enterprise/handler"
+	permissionHandler "basic-crud-go/internal/app/admin/permission/handler"
 	userHandler "basic-crud-go/internal/app/admin/user/handler"
 	"github.com/gin-gonic/gin"
 	swaggerFiles "github.com/swaggo/files"
@@ -13,6 +14,7 @@ func RegisterRoutes(router *gin.Engine) {
 	InitSwagger(router)
 	userHandler.RegisterUserRoutes(router)
 	enterpriseHandler.RegisterEnterpriseRoutes(router)
+	permissionHandler.RegisterPermissionRoutes(router)
 }
 
 func InitSwagger(router *gin.Engine) {

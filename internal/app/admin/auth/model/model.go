@@ -1,6 +1,7 @@
 package model
 
 import (
+	userModel "basic-crud-go/internal/app/admin/user/model"
 	"time"
 )
 
@@ -9,4 +10,9 @@ type Token struct {
 	UserId    string
 	Token     string
 	CreatedAt time.Time
+}
+
+type User struct {
+	Permission string
+	User       userModel.UserExtend
 }

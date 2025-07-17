@@ -14,7 +14,7 @@ func RegisterEnterpriseRoutes(router *gin.RouterGroup) {
 	repo := repository.NewRepositoryImpl(postgres.GetDB())
 	//Service
 	svc := service.NewEnterpriseService(repo)
-	//Conteroller
+	//Controller
 	ctrl := controller.NewEnterpriseController(svc)
 
 	group := router.Group("/")

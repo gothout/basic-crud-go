@@ -39,3 +39,22 @@ func (r *authRepositoryImpl) CreateToken(ctx context.Context, userId string) (*m
 	err = r.db.QueryRowContext(ctx, query, userId, token, createdAt).Scan(&result.Id, &result.UserId, &result.Token, &result.CreatedAt)
 	return &result, nil
 }
+
+func (r *authRepositoryImpl) CreateUser(ctx context.Context, userId, permission string) error {
+	query := `
+		INSERT INTO user_permission (user_id, permission_id)
+		SELECT $1, ap.id
+		FROM admin_permission ap
+		JOIN admin_module am ON am.id = ap.module_id
+		WHERE am.name = $2
+		ON CONFLICT (user_id, permission_id) DO NOTHING;
+	`
+
+	_, err := r.db.ExecContext(ctx, query, userId, permission)
+	if err != nil {
+		logger.Log(logger.Error, module, "CreateUser", fmt.Errorf("error assigning permissions to user: %w", err))
+		return fmt.Errorf("failed to assign permissions to user")
+	}
+
+	return nil
+}

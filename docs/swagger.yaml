@@ -77,6 +77,15 @@ definitions:
       total:
         type: integer
     type: object
+  dto.ReadPermissionResponse:
+    properties:
+      actions:
+        items:
+          $ref: '#/definitions/model.PermissionAction'
+        type: array
+      name:
+        type: string
+    type: object
   dto.ReadUserResponse:
     properties:
       created_at:
@@ -145,6 +154,13 @@ definitions:
       updated:
         $ref: '#/definitions/dto.ReadUserResponse'
     type: object
+  model.PermissionAction:
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+    type: object
   rest_err.Causes:
     properties:
       field:
@@ -171,6 +187,117 @@ info:
   title: Basic Crud
   version: "1.0"
 paths:
+  /admin/user/v1/:
+    post:
+      consumes:
+      - application/json
+      description: Create user by CNPJ, name and email
+      parameters:
+      - description: User Data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CreateUserDTO'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/dto.CreateUserResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/rest_err.RestErr'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/rest_err.RestErr'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/rest_err.RestErr'
+      summary: Create user
+      tags:
+      - User
+  /admin/user/v1/read:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve a paginated list of users
+      parameters:
+      - description: Page number (min 1)
+        in: query
+        name: page
+        type: integer
+      - description: 'Items per page (default: 10)'
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.ReadUsersResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/rest_err.RestErr'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/rest_err.RestErr'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/rest_err.RestErr'
+      summary: List users
+      tags:
+      - User
+  /admin/user/v1/read/enterprise:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve a paginated list of users
+      parameters:
+      - description: CNPJ enterprise
+        in: query
+        name: cnpj
+        required: true
+        type: string
+      - description: Page number (min 1)
+        in: query
+        name: page
+        type: integer
+      - description: 'Items per page (default: 10)'
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.ReadUsersResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/rest_err.RestErr'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/rest_err.RestErr'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/rest_err.RestErr'
+      summary: List users by CNPJ
+      tags:
+      - User
   /enterprise/v1/:
     post:
       consumes:
@@ -318,40 +445,35 @@ paths:
       summary: Read enterprise
       tags:
       - Enterprise
-  /user/v1/:
-    post:
+  /permission/v1/read/{name}:
+    get:
       consumes:
       - application/json
-      description: Create user by CNPJ, name and email
+      description: Read permission by name
       parameters:
-      - description: User Data
-        in: body
-        name: request
+      - description: name of permission
+        in: path
+        name: name
         required: true
-        schema:
-          $ref: '#/definitions/dto.CreateUserDTO'
+        type: string
       produces:
       - application/json
       responses:
-        "201":
-          description: Created
+        "200":
+          description: OK
           schema:
-            $ref: '#/definitions/dto.CreateUserResponse'
+            $ref: '#/definitions/dto.ReadPermissionResponse'
         "400":
           description: Bad Request
-          schema:
-            $ref: '#/definitions/rest_err.RestErr'
-        "404":
-          description: Not Found
           schema:
             $ref: '#/definitions/rest_err.RestErr'
         "500":
           description: Internal Server Error
           schema:
             $ref: '#/definitions/rest_err.RestErr'
-      summary: Create user
+      summary: Read permission
       tags:
-      - User
+      - Permission
   /user/v1/{email}:
     delete:
       consumes:
@@ -451,83 +573,6 @@ paths:
           schema:
             $ref: '#/definitions/rest_err.RestErr'
       summary: Update user
-      tags:
-      - User
-  /user/v1/read:
-    get:
-      consumes:
-      - application/json
-      description: Retrieve a paginated list of users
-      parameters:
-      - description: Page number (min 1)
-        in: query
-        name: page
-        type: integer
-      - description: 'Items per page (default: 10)'
-        in: query
-        name: limit
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/dto.ReadUsersResponse'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/rest_err.RestErr'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/rest_err.RestErr'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/rest_err.RestErr'
-      summary: List users
-      tags:
-      - User
-  /user/v1/read/enterprise:
-    get:
-      consumes:
-      - application/json
-      description: Retrieve a paginated list of users
-      parameters:
-      - description: CNPJ enterprise
-        in: query
-        name: cnpj
-        required: true
-        type: string
-      - description: Page number (min 1)
-        in: query
-        name: page
-        type: integer
-      - description: 'Items per page (default: 10)'
-        in: query
-        name: limit
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/dto.ReadUsersResponse'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/rest_err.RestErr'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/rest_err.RestErr'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/rest_err.RestErr'
-      summary: List users by CNPJ
       tags:
       - User
 swagger: "2.0"
