@@ -21,41 +21,6 @@ func NewPermissionController(s service.PermissionService) PermissionController {
 	}
 }
 
-// Read godoc
-// @Summary      Read permission
-// @Description  Read permission by name
-// @Tags         Permission
-// @Accept       json
-// @Produce      json
-// @Param        name  path      string  true  "name of permission"
-// @Success      200   {object}  dto.ReadPermissionResponse
-// @Failure      400   {object}  rest_err.RestErr
-// @Failure      500   {object}  rest_err.RestErr
-// @Router       /permission/v1/read/{name} [get]
-func (c *permissionControllerImpl) Read(ctx *gin.Context) {
-	req, err := binding.ValidateReadPermissioDTO(ctx)
-	if err != nil {
-		restErr := rest_err.NewBadRequestValidationError("invalid request body", []rest_err.Causes{
-			rest_err.NewCause("validation", err.Error()),
-		})
-		ctx.JSON(restErr.Code, restErr)
-		return
-	}
-
-	// Read
-	mod, err := c.service.Read(ctx, req.Name)
-	if err != nil {
-		restErr := rest_err.NewNotFoundError("module not found")
-		ctx.JSON(restErr.Code, restErr)
-		return
-	}
-
-	ctx.JSON(http.StatusOK, &dto.ReadPermissionResponse{
-		Name:    mod.Name,
-		Actions: mod.Actions,
-	})
-}
-
 // ReadAll godoc
 // @Summary      Read permissions
 // @Description  Retrieve a paginated list of permissionss names
@@ -71,19 +36,22 @@ func (c *permissionControllerImpl) Read(ctx *gin.Context) {
 func (c *permissionControllerImpl) ReadAll(ctx *gin.Context) {
 	req := binding.ValidatePermissionsDTO(ctx)
 
-	mods, err := c.service.ReadAll(ctx, req.Page, req.Limit)
+	perms, err := c.service.ReadAllPermissions(ctx, req.Page, req.Limit)
 	if err != nil {
 		restErr := rest_err.NewInternalServerError("error fetching permissions", nil)
 		ctx.JSON(restErr.Code, restErr)
 		return
 	}
 
-	var names []string
-	for _, mod := range mods {
-		names = append(names, mod.Name)
+	var responses []dto.ReadPermissionResponse
+	for _, perm := range perms {
+		responses = append(responses, dto.ReadPermissionResponse{
+			Code:        perm.Code,
+			Description: perm.Description,
+		})
 	}
 
-	ctx.JSON(http.StatusOK, &dto.ReadPermissionsResponse{
-		Permissions: names,
+	ctx.JSON(http.StatusOK, dto.ReadPermissionsResponse{
+		Permissions: responses,
 	})
 }

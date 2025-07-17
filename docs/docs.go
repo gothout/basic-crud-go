@@ -457,50 +457,6 @@ const docTemplate = `{
                 }
             }
         },
-        "/permission/v1/read/{name}": {
-            "get": {
-                "description": "Read permission by name",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Permission"
-                ],
-                "summary": "Read permission",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "name of permission",
-                        "name": "name",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/dto.ReadPermissionResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/rest_err.RestErr"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/rest_err.RestErr"
-                        }
-                    }
-                }
-            }
-        },
         "/user/v1/{email}": {
             "get": {
                 "description": "Read user by email",
@@ -775,13 +731,10 @@ const docTemplate = `{
         "dto.ReadPermissionResponse": {
             "type": "object",
             "properties": {
-                "actions": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/model.PermissionAction"
-                    }
+                "code": {
+                    "type": "string"
                 },
-                "name": {
+                "description": {
                     "type": "string"
                 }
             }
@@ -792,7 +745,7 @@ const docTemplate = `{
                 "permissions": {
                     "type": "array",
                     "items": {
-                        "type": "string"
+                        "$ref": "#/definitions/dto.ReadPermissionResponse"
                     }
                 }
             }
@@ -899,17 +852,6 @@ const docTemplate = `{
             "properties": {
                 "updated": {
                     "$ref": "#/definitions/dto.ReadUserResponse"
-                }
-            }
-        },
-        "model.PermissionAction": {
-            "type": "object",
-            "properties": {
-                "id": {
-                    "type": "integer"
-                },
-                "name": {
-                    "type": "string"
                 }
             }
         },
