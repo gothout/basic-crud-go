@@ -7,6 +7,7 @@ import (
 	"basic-crud-go/internal/configuration/rest_err"
 	"github.com/gin-gonic/gin"
 	"net/http"
+	"strings"
 )
 
 const module string = "Admin-Permission-Controller"
@@ -23,7 +24,7 @@ func NewPermissionController(s service.PermissionService) PermissionController {
 
 // ReadAll godoc
 // @Summary      Read permissions
-// @Description  Retrieve a paginated list of permissionss names
+// @Description  Retrieve a paginated list of permissions names
 // @Tags         Permission
 // @Accept       json
 // @Produce      json
@@ -56,6 +57,45 @@ func (c *permissionControllerImpl) ReadAll(ctx *gin.Context) {
 	})
 }
 
+// Read godoc
+// @Summary      Read permission
+// @Description  Read permissions by partial or full code name
+// @Tags         Permission
+// @Accept       json
+// @Produce      json
+// @Param        code   query     string     true   "Read code (min 4 characters)"
+// @Success      200   {object}  dto.ReadPermissionResponse
+// @Failure      400   {object}  rest_err.RestErr
+// @Failure      500   {object}  rest_err.RestErr
+// @Router       /permission/v1/read [get]
+func (c *permissionControllerImpl) Read(ctx *gin.Context) {
+	req, err := binding.ValidateReadPermissioDTO(ctx)
+	if err != nil {
+		restErr := rest_err.NewBadRequestValidationError("invalid query", []rest_err.Causes{
+			rest_err.NewCause("validation", err.Error()),
+		})
+		ctx.JSON(restErr.Code, restErr)
+		return
+	}
+
+	perms, err := c.service.ReadByCode(ctx, req.Code)
+	if err != nil {
+		if strings.Contains(err.Error(), "not found") {
+			restErr := rest_err.NewNotFoundError("code not found")
+			ctx.JSON(restErr.Code, restErr)
+			return
+		}
+		restErr := rest_err.NewInternalServerError("error fetching permission", nil)
+		ctx.JSON(restErr.Code, restErr)
+		return
+	}
+
+	ctx.JSON(http.StatusOK, dto.ReadPermissionResponse{
+		Code:        perms.Code,
+		Description: perms.Description,
+	})
+}
+
 // Search godoc
 // @Summary      Search permissions
 // @Description  Search permissions by partial or full code name
@@ -68,7 +108,7 @@ func (c *permissionControllerImpl) ReadAll(ctx *gin.Context) {
 // @Failure      500   {object}  rest_err.RestErr
 // @Router       /permission/v1/search [get]
 func (c *permissionControllerImpl) Search(ctx *gin.Context) {
-	req, err := binding.ValidateReadPermissionDTO(ctx)
+	req, err := binding.ValidateSearchPermissionDTO(ctx)
 	if err != nil {
 		restErr := rest_err.NewBadRequestValidationError("invalid query", []rest_err.Causes{
 			rest_err.NewCause("validation", err.Error()),

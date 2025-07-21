@@ -410,7 +410,7 @@ const docTemplate = `{
         },
         "/permission/v1/": {
             "get": {
-                "description": "Retrieve a paginated list of permissionss names",
+                "description": "Retrieve a paginated list of permissions names",
                 "consumes": [
                     "application/json"
                 ],
@@ -440,6 +440,50 @@ const docTemplate = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/dto.ReadPermissionsResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/rest_err.RestErr"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/rest_err.RestErr"
+                        }
+                    }
+                }
+            }
+        },
+        "/permission/v1/read": {
+            "get": {
+                "description": "Read permissions by partial or full code name",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Permission"
+                ],
+                "summary": "Read permission",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Read code (min 4 characters)",
+                        "name": "code",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ReadPermissionResponse"
                         }
                     },
                     "400": {

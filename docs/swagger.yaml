@@ -447,7 +447,7 @@ paths:
     get:
       consumes:
       - application/json
-      description: Retrieve a paginated list of permissionss names
+      description: Retrieve a paginated list of permissions names
       parameters:
       - description: Page number (min 1)
         in: query
@@ -473,6 +473,35 @@ paths:
           schema:
             $ref: '#/definitions/rest_err.RestErr'
       summary: Read permissions
+      tags:
+      - Permission
+  /permission/v1/read:
+    get:
+      consumes:
+      - application/json
+      description: Read permissions by partial or full code name
+      parameters:
+      - description: Read code (min 4 characters)
+        in: query
+        name: code
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.ReadPermissionResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/rest_err.RestErr'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/rest_err.RestErr'
+      summary: Read permission
       tags:
       - Permission
   /permission/v1/search:

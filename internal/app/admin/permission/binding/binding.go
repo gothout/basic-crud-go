@@ -6,9 +6,9 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// ValidateReadPermissioDTO read permission by name
-func ValidateReadPermissionDTO(c *gin.Context) (*dto.ReadPermissionDTO, error) {
-	var input dto.ReadPermissionDTO
+// ValidateSearchPermissionDTO search permission by name
+func ValidateSearchPermissionDTO(c *gin.Context) (*dto.SearchPermissionDTO, error) {
+	var input dto.SearchPermissionDTO
 
 	// Faz o bind do query param "query"
 	if err := c.ShouldBindQuery(&input); err != nil {
@@ -20,6 +20,21 @@ func ValidateReadPermissionDTO(c *gin.Context) (*dto.ReadPermissionDTO, error) {
 		return nil, errors.New("query must be at least 4 characters")
 	}
 
+	return &input, nil
+}
+
+// ValidateReadPermissioDTO read permission by code
+func ValidateReadPermissioDTO(c *gin.Context) (*dto.ReadPermissionDTO, error) {
+	var input dto.ReadPermissionDTO
+	// Faz o bind do query param "code"
+	if err := c.ShouldBindQuery(&input); err != nil {
+		return nil, errors.New("code parameter is required")
+	}
+
+	// Validação mínima manual
+	if len(input.Code) < 4 {
+		return nil, errors.New("code must be at least 4 characters")
+	}
 	return &input, nil
 }
 

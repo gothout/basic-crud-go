@@ -1,7 +1,11 @@
 package dto
 
-type ReadPermissionDTO struct {
+type SearchPermissionDTO struct {
 	Query string `form:"query"`
+}
+
+type ReadPermissionDTO struct {
+	Code string `form:"code"`
 }
 
 type ReadPermissionsDTO struct {

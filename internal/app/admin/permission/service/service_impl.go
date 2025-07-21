@@ -45,3 +45,12 @@ func (s *permissionServiceImpl) ReadAllPermissions(ctx context.Context, page, li
 
 	return permissions, nil
 }
+
+func (s *permissionServiceImpl) ReadByCode(ctx context.Context, code string) (*model.Permission, error) {
+	// read by code
+	perm, err := s.repo.ReadByCode(ctx, code)
+	if err != nil {
+		return perm, err
+	}
+	return perm, nil
+}
