@@ -59,7 +59,7 @@ func (c *permissionControllerImpl) ReadAll(ctx *gin.Context) {
 
 // Read godoc
 // @Summary      Read permission
-// @Description  Read permissions by partial or full code name
+// @Description  Read permissions by full code name
 // @Tags         Permission
 // @Accept       json
 // @Produce      json
@@ -130,4 +130,40 @@ func (c *permissionControllerImpl) Search(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, dto.ReadPermissionsResponse{
 		Permissions: responses,
 	})
+}
+
+// Apply godoc
+// @Summary      Apply permissions to user
+// @Description  Apply a batch of permissions to a user by email
+// @Tags         Permission
+// @Accept       json
+// @Produce      json
+// @Param        payload  body      dto.ApplyPermissionBatchDTO  true  "Email and permission codes"
+// @Success      204
+// @Failure      400   {object}  rest_err.RestErr
+// @Failure      500   {object}  rest_err.RestErr
+// @Router       /permission/v1/apply [post]
+func (c *permissionControllerImpl) Apply(ctx *gin.Context) {
+	req, err := binding.ValidateApplyPermissionBatchDTO(ctx)
+	if err != nil {
+		restErr := rest_err.NewBadRequestValidationError("invalid input", []rest_err.Causes{
+			rest_err.NewCause("validation", err.Error()),
+		})
+		ctx.JSON(restErr.Code, restErr)
+		return
+	}
+
+	err = c.service.ApplyPermissionUserBatch(ctx, req.Email, req.Codes)
+	if err != nil {
+		if strings.Contains(err.Error(), "not found") {
+			restErr := rest_err.NewNotFoundError(err.Error())
+			ctx.JSON(restErr.Code, restErr)
+			return
+		}
+		restErr := rest_err.NewInternalServerError("failed to apply permissions", nil)
+		ctx.JSON(restErr.Code, restErr)
+		return
+	}
+
+	ctx.Status(http.StatusNoContent)
 }

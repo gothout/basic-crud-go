@@ -3,20 +3,43 @@ package service
 import (
 	"basic-crud-go/internal/app/admin/permission/model"
 	"basic-crud-go/internal/app/admin/permission/repository"
+	userService "basic-crud-go/internal/app/admin/user/service"
 	"basic-crud-go/internal/configuration/logger"
 	"context"
+	"fmt"
 )
 
 const module string = "Admin-Permission-Service"
 
 type permissionServiceImpl struct {
-	repo repository.PermissionRepository
+	repo        repository.PermissionRepository
+	userService userService.UserService
 }
 
-func NewPermissionService(repo repository.PermissionRepository) PermissionService {
+func NewPermissionService(repo repository.PermissionRepository, userService userService.UserService) PermissionService {
 	return &permissionServiceImpl{
-		repo: repo,
+		repo:        repo,
+		userService: userService,
 	}
+}
+
+func (s *permissionServiceImpl) ApplyPermissionUserBatch(ctx context.Context, email string, codes []string) error {
+
+	// Verify user exist
+	user, _, err := s.userService.Read(ctx, email)
+	if err != nil {
+		return fmt.Errorf("user not found")
+	}
+
+	// verify codes
+	for i := 0; i < len(codes); i++ {
+		_, err := s.repo.ReadByCode(ctx, codes[i])
+		if err != nil {
+			return fmt.Errorf("permission code '%s' not found", codes[i])
+		}
+	}
+
+	return s.repo.ApplyPermissionUserBatch(ctx, user.Id, codes)
 }
 
 func (s *permissionServiceImpl) Search(ctx context.Context, name string) ([]model.Permission, error) {

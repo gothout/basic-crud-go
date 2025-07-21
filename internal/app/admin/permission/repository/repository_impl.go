@@ -6,6 +6,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"github.com/lib/pq"
 )
 
 const module string = "Admin-Permission-Repository"
@@ -20,16 +21,21 @@ func NewRepositoryImpl(db *sql.DB) PermissionRepository {
 	}
 }
 
-func (r *permissionRepositoryImpl) ApplyPermissionUser(ctx context.Context, userID string, code string) error {
+func (r *permissionRepositoryImpl) ApplyPermissionUserBatch(ctx context.Context, userID string, codes []string) error {
+	if len(codes) == 0 {
+		return nil
+	}
+
 	query := `
 		INSERT INTO user_permission (user_id, permission_id)
-		SELECT $1, id FROM admin_permission WHERE code = $2
+		SELECT $1, id FROM admin_permission
+		WHERE code = ANY($2)
 		ON CONFLICT DO NOTHING;
 	`
 
-	_, err := r.db.ExecContext(ctx, query, userID, code)
+	_, err := r.db.ExecContext(ctx, query, userID, pq.Array(codes))
 	if err != nil {
-		logger.Log(logger.Error, module, "ApplyPermissionUser", err)
+		logger.Log(logger.Error, module, "ApplyPermissionUserBatch", err)
 		return err
 	}
 

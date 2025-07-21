@@ -6,7 +6,7 @@ import (
 )
 
 type PermissionRepository interface {
-	ApplyPermissionUser(ctx context.Context, userID string, code string) error
+	ApplyPermissionUserBatch(ctx context.Context, userID string, codes []string) error
 	Search(ctx context.Context, name string) ([]model.Permission, error)
 	ReadByCode(ctx context.Context, code string) (*model.Permission, error)
 	ReadAllPermissions(ctx context.Context, page, limit int) ([]model.Permission, error)

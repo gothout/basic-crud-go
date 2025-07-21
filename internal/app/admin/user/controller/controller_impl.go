@@ -34,7 +34,7 @@ func NewUserController(s service.UserService) UserController {
 // @Failure      400      {object}  rest_err.RestErr
 // @Failure		 404	  {object}	rest_err.RestErr
 // @Failure      500      {object}  rest_err.RestErr
-// @Router       /admin/user/v1/ [post]
+// @Router       /user/v1/ [post]
 func (c *userController) CreateUserHandler(ctx *gin.Context) {
 	var req dto.CreateUserDTO
 
@@ -99,7 +99,7 @@ func (c *userController) CreateUserHandler(ctx *gin.Context) {
 // @Failure      400    {object}  rest_err.RestErr
 // @Failure      404    {object}  rest_err.RestErr
 // @Failure      500    {object}  rest_err.RestErr
-// @Router       /admin/user/v1/read [get]
+// @Router       /user/v1/read [get]
 func (c *userController) ReadUsersHandler(ctx *gin.Context) {
 	req := binding.ValidateReadUsersDTO(ctx)
 
@@ -149,7 +149,7 @@ func (c *userController) ReadUsersHandler(ctx *gin.Context) {
 // @Failure      400    {object}  rest_err.RestErr
 // @Failure      404    {object}  rest_err.RestErr
 // @Failure      500    {object}  rest_err.RestErr
-// @Router       /admin/user/v1/read/enterprise [get]
+// @Router       /user/v1/read/enterprise [get]
 func (c *userController) ReadUsersByCnpjHandler(ctx *gin.Context) {
 	req, err := binding.ValidateReadUsersByCnpjDTO(ctx)
 	// Validate DTO
