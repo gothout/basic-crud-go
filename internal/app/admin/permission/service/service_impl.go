@@ -93,3 +93,19 @@ func (s *permissionServiceImpl) ReadPermissionsUser(ctx context.Context, email s
 	}
 	return permissions, nil
 }
+
+func (s *permissionServiceImpl) RemovePermissionsBatch(ctx context.Context, email string, codes []string) error {
+
+	// read user
+	user, _, err := s.userService.Read(ctx, email)
+	if err != nil {
+		return err
+	}
+
+	// remove permissions
+	removed := s.repo.RemovePermissionsBatch(ctx, user.Id, codes)
+	if removed != nil {
+		return fmt.Errorf("permission code '%s' not found", codes[0])
+	}
+	return removed
+}

@@ -215,3 +215,42 @@ func (c *permissionControllerImpl) ReadUserPermission(ctx *gin.Context) {
 		Permissions: responses,
 	})
 }
+
+// RemoveBatch godoc
+// @Summary      Remove permissions from user
+// @Description  Remove a batch of permissions from a user by email
+// @Tags         Permission
+// @Accept       json
+// @Produce      json
+// @Param        email   path      string                       true  "User email"
+// @Param        payload body      dto.DeletePermissionPayload  true  "Batch of permission codes to remove"
+// @Success      204
+// @Failure      400   {object}  rest_err.RestErr
+// @Failure      404   {object}  rest_err.RestErr
+// @Failure      500   {object}  rest_err.RestErr
+// @Router       /permission/v1/user/{email} [delete]
+func (c *permissionControllerImpl) RemoveBatch(ctx *gin.Context) {
+	email, codes, err := binding.ValidateDeletePermissionBatchDTO(ctx)
+	if err != nil {
+		restErr := rest_err.NewBadRequestValidationError("invalid request body", []rest_err.Causes{
+			rest_err.NewCause("validation", err.Error()),
+		})
+		ctx.JSON(restErr.Code, restErr)
+		return
+	}
+
+	err = c.service.RemovePermissionsBatch(ctx, email, codes)
+	if err == nil {
+		ctx.Status(http.StatusNoContent)
+		return
+	}
+
+	if strings.Contains(err.Error(), "not found") || strings.Contains(err.Error(), "nao encontrada") {
+		restErr := rest_err.NewNotFoundError(fmt.Sprintf("user %s not found", email))
+		ctx.JSON(restErr.Code, restErr)
+		return
+	}
+
+	restErr := rest_err.NewInternalServerError("error removing permissions", nil)
+	ctx.JSON(restErr.Code, restErr)
+}

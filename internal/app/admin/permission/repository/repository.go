@@ -11,4 +11,5 @@ type PermissionRepository interface {
 	ReadByCode(ctx context.Context, code string) (*model.Permission, error)
 	ReadAllPermissions(ctx context.Context, page, limit int) ([]model.Permission, error)
 	ReadPermissionUserId(ctx context.Context, id string) ([]model.Permission, error)
+	RemovePermissionsBatch(ctx context.Context, userID string, codes []string) error
 }

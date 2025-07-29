@@ -84,3 +84,26 @@ func ValidateApplyPermissionBatchDTO(c *gin.Context) (*dto.ApplyPermissionBatchD
 
 	return &input, nil
 }
+
+// ValidateDeletePermissionBatchDTO binds and validates email from URI and codes from JSON
+func ValidateDeletePermissionBatchDTO(c *gin.Context) (string, []string, error) {
+	var uri dto.DeletePermissionURI
+	if err := c.ShouldBindUri(&uri); err != nil || uri.Email == "" {
+		return "", nil, errors.New("email (uri) is required")
+	}
+
+	if !userUtil.IsEmailValid(uri.Email) {
+		return "", nil, fmt.Errorf("invalid email address: %s", uri.Email)
+	}
+
+	var body dto.DeletePermissionPayload
+	if err := c.ShouldBindJSON(&body); err != nil {
+		return "", nil, errors.New("invalid JSON body or missing required fields")
+	}
+
+	if len(body.Codes) == 0 {
+		return "", nil, errors.New("at least one permission code must be provided")
+	}
+
+	return uri.Email, body.Codes, nil
+}

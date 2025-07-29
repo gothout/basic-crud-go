@@ -170,3 +170,25 @@ func (r *permissionRepositoryImpl) ReadPermissionUserId(ctx context.Context, id 
 
 	return permissions, nil
 }
+
+func (r *permissionRepositoryImpl) RemovePermissionsBatch(ctx context.Context, userID string, codes []string) error {
+	if len(codes) == 0 {
+		return nil
+	}
+
+	query := `
+		DELETE FROM user_permission
+		WHERE user_id = $1
+		AND permission_id IN (
+			SELECT id FROM admin_permission WHERE code = ANY($2)
+		);
+	`
+
+	_, err := r.db.ExecContext(ctx, query, userID, pq.Array(codes))
+	if err != nil {
+		logger.Log(logger.Error, module, "RemovePermissionsBatch", err)
+		return err
+	}
+
+	return nil
+}

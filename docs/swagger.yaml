@@ -66,6 +66,15 @@ definitions:
       number:
         type: string
     type: object
+  dto.DeletePermissionPayload:
+    properties:
+      codes:
+        items:
+          type: string
+        type: array
+    required:
+    - codes
+    type: object
   dto.ReadEnterpriseResponse:
     properties:
       cnpj:
@@ -464,6 +473,42 @@ paths:
       tags:
       - Permission
   /permission/v1/user/{email}:
+    delete:
+      consumes:
+      - application/json
+      description: Remove a batch of permissions from a user by email
+      parameters:
+      - description: User email
+        in: path
+        name: email
+        required: true
+        type: string
+      - description: Batch of permission codes to remove
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/dto.DeletePermissionPayload'
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/rest_err.RestErr'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/rest_err.RestErr'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/rest_err.RestErr'
+      summary: Remove permissions from user
+      tags:
+      - Permission
     get:
       consumes:
       - application/json

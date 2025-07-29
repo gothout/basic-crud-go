@@ -11,6 +11,12 @@ type ReadPermissionDTO struct {
 type ReadUserPermissionsDTO struct {
 	Email string `uri:"email" binding:"required"`
 }
+type DeletePermissionURI struct {
+	Email string `uri:"email" binding:"required"`
+}
+type DeletePermissionPayload struct {
+	Codes []string `json:"codes" binding:"required"`
+}
 
 type ReadPermissionsDTO struct {
 	Page  int `form:"page" binding:"omitempty"`

@@ -11,4 +11,5 @@ type PermissionService interface {
 	ReadAllPermissions(ctx context.Context, page, limit int) ([]model.Permission, error)
 	ReadByCode(ctx context.Context, code string) (*model.Permission, error)
 	ReadPermissionsUser(ctx context.Context, email string) ([]model.Permission, error)
+	RemovePermissionsBatch(ctx context.Context, email string, codes []string) error
 }

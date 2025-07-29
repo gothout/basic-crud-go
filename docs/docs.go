@@ -466,6 +466,60 @@ const docTemplate = `{
                         }
                     }
                 }
+            },
+            "delete": {
+                "description": "Remove a batch of permissions from a user by email",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Permission"
+                ],
+                "summary": "Remove permissions from user",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "User email",
+                        "name": "email",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Batch of permission codes to remove",
+                        "name": "payload",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.DeletePermissionPayload"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/rest_err.RestErr"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/rest_err.RestErr"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/rest_err.RestErr"
+                        }
+                    }
+                }
             }
         },
         "/user/v1/": {
@@ -887,6 +941,20 @@ const docTemplate = `{
                 },
                 "number": {
                     "type": "string"
+                }
+            }
+        },
+        "dto.DeletePermissionPayload": {
+            "type": "object",
+            "required": [
+                "codes"
+            ],
+            "properties": {
+                "codes": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
                 }
             }
         },

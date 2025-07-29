@@ -41,6 +41,7 @@ func RegisterPermissionRoutes(router *gin.RouterGroup) {
 		group.GET("", permController.ReadAll)
 		group.GET("user/:email", permController.ReadUserPermission)
 		group.POST("apply", permController.Apply)
+		group.DELETE("user/:email", permController.RemoveBatch)
 	}
 
 }

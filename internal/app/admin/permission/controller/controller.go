@@ -8,4 +8,5 @@ type PermissionController interface {
 	Apply(ctx *gin.Context)
 	ReadAll(ctx *gin.Context)
 	ReadUserPermission(ctx *gin.Context)
+	RemoveBatch(ctx *gin.Context)
 }
