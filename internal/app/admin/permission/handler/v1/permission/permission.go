@@ -39,6 +39,7 @@ func RegisterPermissionRoutes(router *gin.RouterGroup) {
 		group.GET("search/", permController.Search)
 		group.GET("read/", permController.Read)
 		group.GET("", permController.ReadAll)
+		group.GET("user/:email", permController.ReadUserPermission)
 		group.POST("apply", permController.Apply)
 	}
 

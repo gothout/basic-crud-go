@@ -137,3 +137,36 @@ func (r *permissionRepositoryImpl) ReadByCode(ctx context.Context, code string) 
 	}
 	return &perm, nil
 }
+
+func (r *permissionRepositoryImpl) ReadPermissionUserId(ctx context.Context, id string) ([]model.Permission, error) {
+	var permissions []model.Permission
+
+	query := `
+		SELECT ap.id, ap.code, ap.description
+		FROM admin_permission ap
+		INNER JOIN user_permission up ON up.permission_id = ap.id
+		WHERE up.user_id = $1
+		ORDER BY ap.id;
+	`
+
+	rows, err := r.db.QueryContext(ctx, query, id)
+	if err != nil {
+		logger.Log(logger.Error, module, "ReadPermissionUserId", err)
+		return nil, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var perm model.Permission
+		if err := rows.Scan(&perm.ID, &perm.Code, &perm.Description); err != nil {
+			logger.Log(logger.Error, module, "ReadPermissionUserId", err)
+		}
+		permissions = append(permissions, perm)
+	}
+	if err := rows.Err(); err != nil {
+		logger.Log(logger.Error, module, "ReadPermissionUserId", err)
+		return nil, err
+	}
+
+	return permissions, nil
+}

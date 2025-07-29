@@ -5,6 +5,7 @@ import (
 	"basic-crud-go/internal/app/admin/permission/dto"
 	"basic-crud-go/internal/app/admin/permission/service"
 	"basic-crud-go/internal/configuration/rest_err"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"strings"
@@ -166,4 +167,51 @@ func (c *permissionControllerImpl) Apply(ctx *gin.Context) {
 	}
 
 	ctx.Status(http.StatusNoContent)
+}
+
+// ReadUserPermission godoc
+// @Summary      Read user permissions
+// @Description  Read all permissions assigned to a user by email
+// @Tags         Permission
+// @Accept       json
+// @Produce      json
+// @Param        email  path     dto.ReadUserPermissionsDTO  true  "Email of the user"
+// @Success      200   {object}  dto.ReadPermissionsResponse
+// @Failure      400   {object}  rest_err.RestErr
+// @Failure      404   {object}  rest_err.RestErr
+// @Failure      500   {object}  rest_err.RestErr
+// @Router       /permission/v1/user/{email} [get]
+func (c *permissionControllerImpl) ReadUserPermission(ctx *gin.Context) {
+	req, err := binding.ValidateReadUserPermissionsDTO(ctx)
+	if err != nil {
+		restErr := rest_err.NewBadRequestValidationError("invalid request body", []rest_err.Causes{
+			rest_err.NewCause("validation", err.Error()),
+		})
+		ctx.JSON(restErr.Code, restErr)
+		return
+	}
+
+	permissions, err := c.service.ReadPermissionsUser(ctx, req.Email)
+	if err != nil {
+		if strings.Contains(err.Error(), "nao encontrada") {
+			restErr := rest_err.NewNotFoundError(fmt.Sprintf("user %s not found", req.Email))
+			ctx.JSON(restErr.Code, restErr)
+			return
+		}
+		restErr := rest_err.NewInternalServerError("error reading user permissions", nil)
+		ctx.JSON(restErr.Code, restErr)
+		return
+	}
+
+	var responses []dto.ReadPermissionResponse
+	for _, perm := range permissions {
+		responses = append(responses, dto.ReadPermissionResponse{
+			Code:        perm.Code,
+			Description: perm.Description,
+		})
+	}
+
+	ctx.JSON(http.StatusOK, dto.ReadPermissionsResponse{
+		Permissions: responses,
+	})
 }

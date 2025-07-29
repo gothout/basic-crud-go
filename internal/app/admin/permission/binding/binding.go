@@ -4,6 +4,7 @@ import (
 	"basic-crud-go/internal/app/admin/permission/dto"
 	userUtil "basic-crud-go/internal/app/admin/user/util"
 	"errors"
+	"fmt"
 	"github.com/gin-gonic/gin"
 )
 
@@ -19,6 +20,20 @@ func ValidateSearchPermissionDTO(c *gin.Context) (*dto.SearchPermissionDTO, erro
 	// Validação mínima manual
 	if len(input.Query) < 4 {
 		return nil, errors.New("query must be at least 4 characters")
+	}
+
+	return &input, nil
+}
+
+// ValidateReadUserPermissionsDTO read user permissions by email
+func ValidateReadUserPermissionsDTO(c *gin.Context) (*dto.ReadUserPermissionsDTO, error) {
+	var input dto.ReadUserPermissionsDTO
+	// Bind path param
+	if err := c.ShouldBindUri(&input); err != nil {
+		return nil, errors.New("email is required")
+	}
+	if !userUtil.IsEmailValid(input.Email) {
+		return nil, fmt.Errorf("invalid email address: %s", input.Email)
 	}
 
 	return &input, nil

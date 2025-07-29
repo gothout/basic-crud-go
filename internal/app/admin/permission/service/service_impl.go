@@ -77,3 +77,19 @@ func (s *permissionServiceImpl) ReadByCode(ctx context.Context, code string) (*m
 	}
 	return perm, nil
 }
+
+func (s *permissionServiceImpl) ReadPermissionsUser(ctx context.Context, email string) ([]model.Permission, error) {
+	var permissions []model.Permission
+
+	// read user
+	user, _, err := s.userService.Read(ctx, email)
+	if err != nil {
+		return permissions, err
+	}
+
+	permissions, err = s.repo.ReadPermissionUserId(ctx, user.Id)
+	if err != nil {
+		return permissions, err
+	}
+	return permissions, nil
+}

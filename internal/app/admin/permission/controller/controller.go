@@ -7,4 +7,5 @@ type PermissionController interface {
 	Read(ctx *gin.Context)
 	Apply(ctx *gin.Context)
 	ReadAll(ctx *gin.Context)
+	ReadUserPermission(ctx *gin.Context)
 }
