@@ -10,3 +10,7 @@ type LoginUserResponse struct {
 	Token       string                          `json:"token"`
 	Permissions permDto.ReadPermissionsResponse `json:"permissions"`
 }
+
+type RefreshTokenUserResponse struct {
+	Message string `json:"message" example:"Token refreshed successfully"`
+}

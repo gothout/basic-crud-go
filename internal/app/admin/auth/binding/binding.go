@@ -21,3 +21,20 @@ func ValidateLoginDTO(c *gin.Context) (*dto.LoginUserDTO, error) {
 	}
 	return &input, nil
 }
+
+// ValidateRefreshTokenUserDTO validates the RefreshTokenDTO input
+func ValidateRefreshTokenUserDTO(c *gin.Context) (*dto.RefreshTokenUserDTO, error) {
+	var input dto.RefreshTokenUserDTO
+
+	// Bind JSON body to struct
+	if err := c.ShouldBindJSON(&input); err != nil {
+		return nil, errors.New("invalid or missing JSON body")
+	}
+
+	// Validate email format
+	if !utilUser.IsEmailValid(input.Email) {
+		return nil, fmt.Errorf("invalid email address: %s", input.Email)
+	}
+
+	return &input, nil
+}

@@ -158,6 +158,25 @@ definitions:
           $ref: '#/definitions/dto.ReadUserResponse'
         type: array
     type: object
+  dto.RefreshTokenUserDTO:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+      token:
+        type: string
+    required:
+    - email
+    - password
+    - token
+    type: object
+  dto.RefreshTokenUserResponse:
+    properties:
+      message:
+        example: Token refreshed successfully
+        type: string
+    type: object
   dto.UpdateEnterpriseDTO:
     properties:
       cnpj:
@@ -254,6 +273,36 @@ paths:
           schema:
             $ref: '#/definitions/rest_err.RestErr'
       summary: Login
+      tags:
+      - Auth
+  /auth/refresh:
+    post:
+      consumes:
+      - application/json
+      description: Reset token expiration if it's still valid
+      parameters:
+      - description: Refresh credentials
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.RefreshTokenUserDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.RefreshTokenUserResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/rest_err.RestErr'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/rest_err.RestErr'
+      summary: Refresh token
       tags:
       - Auth
   /enterprise/v1/:

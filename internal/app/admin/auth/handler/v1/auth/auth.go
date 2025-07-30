@@ -39,5 +39,6 @@ func RegisterAuthRoutes(router *gin.RouterGroup) {
 	userGroup := router.Group("")
 	{
 		userGroup.POST("/login", authCtrl.AuthLoginHandler)
+		userGroup.POST("/refresh", authCtrl.AuthRefreshHandler)
 	}
 }

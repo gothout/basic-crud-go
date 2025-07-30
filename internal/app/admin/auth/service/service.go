@@ -3,6 +3,7 @@ package service
 import (
 	"basic-crud-go/internal/app/admin/auth/model"
 	"basic-crud-go/internal/app/admin/auth/repository"
+	tokencache "basic-crud-go/internal/app/admin/auth/util/token_cache"
 	permService "basic-crud-go/internal/app/admin/permission/service"
 	userService "basic-crud-go/internal/app/admin/user/service"
 	security "basic-crud-go/internal/app/util/password"
@@ -27,6 +28,11 @@ func NewAuthService(repo repository.AuthRepository, userService userService.User
 }
 
 func (s *authServiceImpl) LoginUser(ctx context.Context, email, password string) (*model.UserIdentity, error) {
+	// check if token exists in cache
+	if identity, found := tokencache.GetToken(email); found {
+		return identity, nil
+	}
+
 	// validate email user
 	user, enterprise, err := s.userService.Read(ctx, email)
 	if err != nil {
@@ -62,5 +68,38 @@ func (s *authServiceImpl) LoginUser(ctx context.Context, email, password string)
 		TokenApi:    nil,
 	}
 
+	// save token in cache
+	tokencache.SaveToken(email, identity)
+
 	return identity, nil
+}
+
+func (s *authServiceImpl) RefreshTokenUser(ctx context.Context, email, password, token string) bool {
+	// Validate user credentials from the database
+	user, _, err := s.userService.Read(ctx, email)
+	if err != nil {
+		return false
+	}
+
+	if err := security.Compare(user.Password, password); err != nil {
+		return false
+	}
+
+	// Check if the cached token matches and calculate time remaining
+	identity, found := tokencache.GetToken(email)
+	if !found || identity.TokenUser.Token != token {
+		return false
+	}
+
+	ttl, valid := tokencache.GetRemainingTTL(email)
+	if !valid || ttl <= 10*time.Minute {
+		return false // do not refresh if token is near expiration or invalid
+	}
+
+	// Refresh token expiration
+	return tokencache.RefreshToken(email, token)
+}
+
+func (s *authServiceImpl) LogoutUser(ctx context.Context, email string) {
+	tokencache.Logout(email)
 }
