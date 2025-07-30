@@ -75,6 +75,25 @@ definitions:
     required:
     - codes
     type: object
+  dto.LoginUserDTO:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    required:
+    - email
+    - password
+    type: object
+  dto.LoginUserResponse:
+    properties:
+      permissions:
+        $ref: '#/definitions/dto.ReadPermissionsResponse'
+      token:
+        type: string
+      user:
+        $ref: '#/definitions/dto.ReadUserResponse'
+    type: object
   dto.ReadEnterpriseResponse:
     properties:
       cnpj:
@@ -207,6 +226,36 @@ info:
   title: Basic Crud
   version: "1.0"
 paths:
+  /auth/login:
+    post:
+      consumes:
+      - application/json
+      description: Authenticate user and return user data, token and permissions
+      parameters:
+      - description: Login credentials
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.LoginUserDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.LoginUserResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/rest_err.RestErr'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/rest_err.RestErr'
+      summary: Login
+      tags:
+      - Auth
   /enterprise/v1/:
     post:
       consumes:

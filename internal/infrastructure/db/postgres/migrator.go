@@ -95,7 +95,7 @@ func RunMigrations() {
 // 🔁 Rollback por pasta com base no nome da pasta (ex: 02_user)
 var rollbackMapByFolder = map[string][]string{
 	"01_enterprise": {"enterprise"},
-	"02_user":       {"user", "admin_token"},
+	"02_user":       {"user", "admin_api_token", "admin_user_token"},
 	"03_permission": {"admin_permission", "user_permission"},
 }
 

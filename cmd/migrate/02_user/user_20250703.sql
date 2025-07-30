@@ -28,9 +28,18 @@ FROM enterprise e
 WHERE e.name = 'System Enterprise'
 ON CONFLICT (email) DO NOTHING;
 
-CREATE TABLE IF NOT EXISTS admin_token (
-  id SERIAL PRIMARY KEY,
-  user_id VARCHAR(36) NOT NULL REFERENCES "user"(id) ON DELETE CASCADE,
-  token TEXT NOT NULL UNIQUE,
-  created_at TIMESTAMP NOT NULL
+CREATE TABLE IF NOT EXISTS admin_api_token (
+    id SERIAL PRIMARY KEY,
+    user_id VARCHAR(36) NOT NULL REFERENCES "user"(id) ON DELETE CASCADE,
+    token TEXT NOT NULL UNIQUE,
+    created_at TIMESTAMP NOT NULL,
+    end_date TIMESTAMP NOT NULL
+);
+
+
+CREATE TABLE IF NOT EXISTS admin_user_token (
+    id SERIAL PRIMARY KEY,
+    user_id VARCHAR(36) NOT NULL REFERENCES "user"(id) ON DELETE CASCADE,
+    token TEXT NOT NULL UNIQUE,
+    created_at TIMESTAMP NOT NULL
 );
