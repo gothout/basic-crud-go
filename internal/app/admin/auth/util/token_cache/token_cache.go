@@ -22,7 +22,7 @@ type tokenCache struct {
 // singleton instance of the cache with default TTL of 10 seconds
 var cache = &tokenCache{
 	tokens: make(map[string]*cacheEntry),
-	ttl:    10 * time.Second,
+	ttl:    1 * time.Hour,
 }
 
 // SaveToken stores the user identity in the cache using email as key
