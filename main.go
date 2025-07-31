@@ -1,6 +1,15 @@
-// @title           Basic Crud
+// @title           Basic CRUD API
 // @version         1.0
-// @description     API administrativa generica para um Basic Crud
+// @description     Generic administrative API for a Basic Crud
+// @termsOfService  http://swagger.io/terms/
+
+// @license.name  MIT
+// @license.url   https://opensource.org/licenses/MIT
+
+// @securityDefinitions.apikey BearerAuth
+// @in header
+// @name Authorization
+// @description Enter the token in the format: Bearer <your_token>
 
 package main
 

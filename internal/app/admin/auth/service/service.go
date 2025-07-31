@@ -100,6 +100,9 @@ func (s *authServiceImpl) RefreshTokenUser(ctx context.Context, email, password,
 	return tokencache.RefreshToken(email, token)
 }
 
-func (s *authServiceImpl) LogoutUser(ctx context.Context, email string) {
-	tokencache.Logout(email)
+func (s *authServiceImpl) LogoutUser(ctx context.Context, email, token string) bool {
+	if !tokencache.Logout(email, token) {
+		return false
+	}
+	return true
 }

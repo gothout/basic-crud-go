@@ -110,3 +110,42 @@ func (ac *authController) AuthRefreshHandler(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusOK, gin.H{"message": "Token refreshed successfully"})
 }
+
+// AuthLogoutHandler godoc
+// @Summary      Logout user
+// @Description  Logs user out of the system by invalidating their token
+// @Tags         Auth
+// @Accept       json
+// @Produce      json
+// @Security     BearerAuth
+// @Param        request  body      dto.LogoutUserDTO  true  "Logout request (only email)"
+// @Success      204
+// @Failure      400  {object}  rest_err.RestErr
+// @Failure      403  {object}  rest_err.RestErr
+// @Router       /auth/logout [post]
+func (ac *authController) AuthLogoutHandler(ctx *gin.Context) {
+	req, err := binding.ValidateLogoutUserDTO(ctx)
+	if err != nil {
+		restErr := rest_err.NewBadRequestValidationError("Invalid request body", []rest_err.Causes{
+			rest_err.NewCause("validation", err.Error()),
+		})
+		ctx.JSON(restErr.Code, restErr)
+		return
+	}
+	// extract token header
+	authHeader := ctx.GetHeader("Authorization")
+	if len(authHeader) < 8 || authHeader[:7] != "Bearer " {
+		restErr := rest_err.NewBadRequestError("Missing or malformed Authorization header")
+		ctx.JSON(restErr.Code, restErr)
+		return
+	}
+	token := authHeader[7:]
+
+	// execute logout
+	if !ac.service.LogoutUser(ctx, req.Email, token) {
+		restErr := rest_err.NewForbiddenError("Invalid logout")
+		ctx.JSON(restErr.Code, restErr)
+		return
+	}
+	ctx.Status(http.StatusNoContent)
+}

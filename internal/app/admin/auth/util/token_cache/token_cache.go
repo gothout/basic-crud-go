@@ -68,12 +68,23 @@ func RefreshToken(email string, token string) bool {
 	return true
 }
 
-// Logout removes the token from cache (used for logoff)
-func Logout(email string) {
+// Logout removes the token from cache only if the provided token matches
+func Logout(email, token string) bool {
 	cache.mu.Lock()
 	defer cache.mu.Unlock()
 
+	entry, exists := cache.tokens[email]
+	if !exists || entry.Identity == nil || entry.Identity.TokenUser == nil {
+		return false
+	}
+
+	// Token must match
+	if entry.Identity.TokenUser.Token != token {
+		return false
+	}
+
 	delete(cache.tokens, email)
+	return true
 }
 
 // GetRemainingTTL returns the time remaining before the token expires.

@@ -38,3 +38,17 @@ func ValidateRefreshTokenUserDTO(c *gin.Context) (*dto.RefreshTokenUserDTO, erro
 
 	return &input, nil
 }
+
+// ValidateLogoutUserDTO validate DTO LogoutUserDTO
+func ValidateLogoutUserDTO(c *gin.Context) (*dto.LogoutUserDTO, error) {
+	var input dto.LogoutUserDTO
+	// Bind body JSON
+	if err := c.ShouldBindJSON(&input); err != nil {
+		return nil, errors.New("invalid or missing JSON body")
+	}
+	// Validate email from JSON
+	if !utilUser.IsEmailValid(input.Email) {
+		return nil, fmt.Errorf("invalid email address: %s", input.Email)
+	}
+	return &input, nil
+}

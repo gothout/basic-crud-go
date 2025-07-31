@@ -94,6 +94,13 @@ definitions:
       user:
         $ref: '#/definitions/dto.ReadUserResponse'
     type: object
+  dto.LogoutUserDTO:
+    properties:
+      email:
+        type: string
+    required:
+    - email
+    type: object
   dto.ReadEnterpriseResponse:
     properties:
       cnpj:
@@ -241,8 +248,12 @@ definitions:
     type: object
 info:
   contact: {}
-  description: API administrativa generica para um Basic Crud
-  title: Basic Crud
+  description: Generic administrative API for a Basic Crud
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+  termsOfService: http://swagger.io/terms/
+  title: Basic CRUD API
   version: "1.0"
 paths:
   /auth/login:
@@ -273,6 +284,36 @@ paths:
           schema:
             $ref: '#/definitions/rest_err.RestErr'
       summary: Login
+      tags:
+      - Auth
+  /auth/logout:
+    post:
+      consumes:
+      - application/json
+      description: Logs user out of the system by invalidating their token
+      parameters:
+      - description: Logout request (only email)
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.LogoutUserDTO'
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/rest_err.RestErr'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/rest_err.RestErr'
+      security:
+      - BearerAuth: []
+      summary: Logout user
       tags:
       - Auth
   /auth/refresh:
@@ -850,4 +891,10 @@ paths:
       summary: List users by CNPJ
       tags:
       - User
+securityDefinitions:
+  BearerAuth:
+    description: 'Enter the token in the format: Bearer <your_token>'
+    in: header
+    name: Authorization
+    type: apiKey
 swagger: "2.0"
