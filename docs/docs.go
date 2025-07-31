@@ -165,6 +165,57 @@ const docTemplate = `{
                 }
             }
         },
+        "/auth/token": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Generates a new API token using a valid Bearer token and email",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Generate API Token",
+                "parameters": [
+                    {
+                        "description": "Token creation request",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.CreateTokenAPIDto"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.CreateTokenAPIResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/rest_err.RestErr"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/rest_err.RestErr"
+                        }
+                    }
+                }
+            }
+        },
         "/enterprise/v1/": {
             "put": {
                 "description": "Update enterprise by CNPJ",
@@ -1040,6 +1091,32 @@ const docTemplate = `{
                 },
                 "name": {
                     "type": "string"
+                }
+            }
+        },
+        "dto.CreateTokenAPIDto": {
+            "type": "object",
+            "required": [
+                "email",
+                "expires"
+            ],
+            "properties": {
+                "email": {
+                    "type": "string",
+                    "example": "admin@test.com"
+                },
+                "expires": {
+                    "type": "string",
+                    "example": "2025-12-31T23:59:59Z"
+                }
+            }
+        },
+        "dto.CreateTokenAPIResponse": {
+            "type": "object",
+            "properties": {
+                "token": {
+                    "type": "string",
+                    "example": "645fe33b232a1b0c19f4e2bf1e475df2aa381cf45457ab6885cfb9c4bcd9e288"
                 }
             }
         },

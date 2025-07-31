@@ -54,7 +54,7 @@ func (r *authRepositoryImpl) GenerateTokenAPI(ctx context.Context, userId string
 	}
 
 	query := `
-		INSERT INTO admin_integracao_tokens (user_id, token, created_at, expires_at)
+		INSERT INTO admin_api_token (user_id, token, created_at, end_date)
 		VALUES ($1, $2, $3, $4);
 	`
 

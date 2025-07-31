@@ -8,6 +8,7 @@ import (
 	userService "basic-crud-go/internal/app/admin/user/service"
 	security "basic-crud-go/internal/app/util/password"
 	"context"
+	"fmt"
 	"time"
 )
 
@@ -105,4 +106,27 @@ func (s *authServiceImpl) LogoutUser(ctx context.Context, email, token string) b
 		return false
 	}
 	return true
+}
+
+func (s *authServiceImpl) GenerateTokenAPI(ctx context.Context, email, token string, expiresAt time.Time) (string, error) {
+	// Validate user credentials from the database
+	user, _, err := s.userService.Read(ctx, email)
+	if err != nil {
+		return "", err
+	}
+	// Check if the cached token matches
+	identity, found := tokencache.GetToken(email)
+	if !found || identity.TokenUser.Token != token {
+		return "", fmt.Errorf("not authorize")
+	}
+
+	dateNow := time.Now()
+
+	// generate token
+	tokenApi, err := s.repo.GenerateTokenAPI(ctx, user.Id, dateNow, expiresAt)
+	if err != nil {
+		return "", err
+	}
+
+	return tokenApi, nil
 }

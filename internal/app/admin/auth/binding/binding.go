@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"time"
 )
 
 // ValidateLoginDTO validate DTO LoginUserDTO
@@ -50,5 +51,27 @@ func ValidateLogoutUserDTO(c *gin.Context) (*dto.LogoutUserDTO, error) {
 	if !utilUser.IsEmailValid(input.Email) {
 		return nil, fmt.Errorf("invalid email address: %s", input.Email)
 	}
+	return &input, nil
+}
+
+// ValidateCreateTokenAPIDTO validates CreateTokenAPIDto input
+func ValidateCreateTokenAPIDTO(c *gin.Context) (*dto.CreateTokenAPIDto, error) {
+	var input dto.CreateTokenAPIDto
+
+	// Bind JSON body
+	if err := c.ShouldBindJSON(&input); err != nil {
+		return nil, errors.New("invalid or missing JSON body")
+	}
+
+	// Validate email
+	if !utilUser.IsEmailValid(input.Email) {
+		return nil, fmt.Errorf("invalid email address: %s", input.Email)
+	}
+
+	// Validate expiration time is in the future
+	if input.ExpiresAt.Before(time.Now()) {
+		return nil, fmt.Errorf("expiration time must be in the future: %s", input.ExpiresAt.Format(time.RFC3339))
+	}
+
 	return &input, nil
 }

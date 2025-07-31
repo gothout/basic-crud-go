@@ -157,3 +157,47 @@ func (ac *authController) AuthLogoutHandler(ctx *gin.Context) {
 	}
 	ctx.Status(http.StatusNoContent)
 }
+
+// AuthCreateTokenHandler godoc
+// @Summary      Generate API Token
+// @Description  Generates a new API token using a valid Bearer token and email
+// @Tags         Auth
+// @Accept       json
+// @Produce      json
+// @Security     BearerAuth
+// @Param        request  body      dto.CreateTokenAPIDto  true  "Token creation request"
+// @Success      200  {object}  dto.CreateTokenAPIResponse
+// @Failure      400  {object}  rest_err.RestErr
+// @Failure      403  {object}  rest_err.RestErr
+// @Router       /auth/token [post]
+func (ac *authController) AuthCreateTokenHandler(ctx *gin.Context) {
+	req, err := binding.ValidateCreateTokenAPIDTO(ctx)
+	if err != nil {
+		restErr := rest_err.NewBadRequestValidationError("Invalid request body", []rest_err.Causes{
+			rest_err.NewCause("validation", err.Error()),
+		})
+		ctx.JSON(restErr.Code, restErr)
+		return
+	}
+
+	// Extract token from Authorization header
+	authHeader := ctx.GetHeader("Authorization")
+	if len(authHeader) < 8 || authHeader[:7] != "Bearer " {
+		restErr := rest_err.NewBadRequestError("Missing or malformed Authorization header")
+		ctx.JSON(restErr.Code, restErr)
+		return
+	}
+	token := authHeader[7:]
+
+	// Execute create token
+	tokenAPI, err := ac.service.GenerateTokenAPI(ctx, req.Email, token, req.ExpiresAt)
+	if err != nil {
+		restErr := rest_err.NewForbiddenError("Unauthorized to generate API token")
+		ctx.JSON(restErr.Code, restErr)
+		return
+	}
+
+	ctx.JSON(http.StatusOK, &dto.CreateTokenAPIResponse{
+		Token: tokenAPI,
+	})
+}

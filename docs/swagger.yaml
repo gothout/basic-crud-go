@@ -31,6 +31,24 @@ definitions:
       name:
         type: string
     type: object
+  dto.CreateTokenAPIDto:
+    properties:
+      email:
+        example: admin@test.com
+        type: string
+      expires:
+        example: "2025-12-31T23:59:59Z"
+        type: string
+    required:
+    - email
+    - expires
+    type: object
+  dto.CreateTokenAPIResponse:
+    properties:
+      token:
+        example: 645fe33b232a1b0c19f4e2bf1e475df2aa381cf45457ab6885cfb9c4bcd9e288
+        type: string
+    type: object
   dto.CreateUserDTO:
     properties:
       cnpj:
@@ -340,6 +358,38 @@ paths:
       security:
       - BearerAuth: []
       summary: Refresh token
+      tags:
+      - Auth
+  /auth/token:
+    post:
+      consumes:
+      - application/json
+      description: Generates a new API token using a valid Bearer token and email
+      parameters:
+      - description: Token creation request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CreateTokenAPIDto'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.CreateTokenAPIResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/rest_err.RestErr'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/rest_err.RestErr'
+      security:
+      - BearerAuth: []
+      summary: Generate API Token
       tags:
       - Auth
   /enterprise/v1/:
