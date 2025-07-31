@@ -44,3 +44,25 @@ func (r *authRepositoryImpl) GenerateTokenUser(ctx context.Context, userId strin
 
 	return &result, nil
 }
+
+func (r *authRepositoryImpl) GenerateTokenAPI(ctx context.Context, userId string, createdAt, expiresAt time.Time) (string, error) {
+	// generate secure token
+	token, err := util.GenerateSecureToken(32)
+	if err != nil {
+		logger.Log(logger.Error, module, "GenerateTokenAPI", fmt.Errorf("error generating token %w", err))
+		return "", fmt.Errorf("error generating token")
+	}
+
+	query := `
+		INSERT INTO admin_integracao_tokens (user_id, token, created_at, expires_at)
+		VALUES ($1, $2, $3, $4);
+	`
+
+	_, err = r.db.ExecContext(ctx, query, userId, token, createdAt, expiresAt)
+	if err != nil {
+		logger.Log(logger.Error, module, "InsertTokenAPI", fmt.Errorf("error inserting API token %w", err))
+		return "", fmt.Errorf("error inserting token")
+	}
+
+	return token, nil
+}

@@ -169,14 +169,8 @@ definitions:
     properties:
       email:
         type: string
-      password:
-        type: string
-      token:
-        type: string
     required:
     - email
-    - password
-    - token
     type: object
   dto.RefreshTokenUserResponse:
     properties:
@@ -343,6 +337,8 @@ paths:
           description: Forbidden
           schema:
             $ref: '#/definitions/rest_err.RestErr'
+      security:
+      - BearerAuth: []
       summary: Refresh token
       tags:
       - Auth

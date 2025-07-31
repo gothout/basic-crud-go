@@ -7,6 +7,6 @@ import (
 
 type AuthService interface {
 	LoginUser(ctx context.Context, email, senha string) (*model.UserIdentity, error)
-	RefreshTokenUser(ctx context.Context, email, password, token string) bool
+	RefreshTokenUser(ctx context.Context, email, token string) bool
 	LogoutUser(ctx context.Context, email, token string) bool
 }

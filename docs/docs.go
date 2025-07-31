@@ -116,6 +116,11 @@ const docTemplate = `{
         },
         "/auth/refresh": {
             "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Reset token expiration if it's still valid",
                 "consumes": [
                     "application/json"
@@ -1245,18 +1250,10 @@ const docTemplate = `{
         "dto.RefreshTokenUserDTO": {
             "type": "object",
             "required": [
-                "email",
-                "password",
-                "token"
+                "email"
             ],
             "properties": {
                 "email": {
-                    "type": "string"
-                },
-                "password": {
-                    "type": "string"
-                },
-                "token": {
                     "type": "string"
                 }
             }

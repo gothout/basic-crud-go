@@ -9,5 +9,5 @@ import (
 type AuthRepository interface {
 	//GetCredencial(userId string) (model.User, error)
 	GenerateTokenUser(ctx context.Context, userId string, createdAt time.Time) (*model.TokenUser, error)
-	//GenerateTokenAPI(ctx context.Context, userId string) (string, error)
+	GenerateTokenAPI(ctx context.Context, userId string, createdAt, ExpiresAt time.Time) (string, error)
 }

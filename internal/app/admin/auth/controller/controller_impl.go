@@ -85,6 +85,7 @@ func (ac *authController) AuthLoginHandler(ctx *gin.Context) {
 // @Tags         Auth
 // @Accept       json
 // @Produce      json
+// @Security     BearerAuth
 // @Param        request  body      dto.RefreshTokenUserDTO  true  "Refresh credentials"
 // @Success      200      {object}  dto.RefreshTokenUserResponse
 // @Failure      400      {object}  rest_err.RestErr
@@ -99,9 +100,16 @@ func (ac *authController) AuthRefreshHandler(ctx *gin.Context) {
 		ctx.JSON(restErr.Code, restErr)
 		return
 	}
-
+	// extract token header
+	authHeader := ctx.GetHeader("Authorization")
+	if len(authHeader) < 8 || authHeader[:7] != "Bearer " {
+		restErr := rest_err.NewBadRequestError("Missing or malformed Authorization header")
+		ctx.JSON(restErr.Code, restErr)
+		return
+	}
+	token := authHeader[7:]
 	// Use service to refresh token (validates against DB and cache)
-	success := ac.service.RefreshTokenUser(ctx, req.Email, req.Password, req.Token)
+	success := ac.service.RefreshTokenUser(ctx, req.Email, token)
 	if !success {
 		restErr := rest_err.NewForbiddenError("Invalid credentials or token")
 		ctx.JSON(restErr.Code, restErr)

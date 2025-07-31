@@ -74,16 +74,16 @@ func (s *authServiceImpl) LoginUser(ctx context.Context, email, password string)
 	return identity, nil
 }
 
-func (s *authServiceImpl) RefreshTokenUser(ctx context.Context, email, password, token string) bool {
+func (s *authServiceImpl) RefreshTokenUser(ctx context.Context, email, token string) bool {
 	// Validate user credentials from the database
-	user, _, err := s.userService.Read(ctx, email)
-	if err != nil {
-		return false
-	}
+	//user, _, err := s.userService.Read(ctx, email)
+	//if err != nil {
+	//	return false
+	//}
 
-	if err := security.Compare(user.Password, password); err != nil {
-		return false
-	}
+	//if err := security.Compare(user.Password, password); err != nil {
+	//return false
+	//}
 
 	// Check if the cached token matches and calculate time remaining
 	identity, found := tokencache.GetToken(email)
