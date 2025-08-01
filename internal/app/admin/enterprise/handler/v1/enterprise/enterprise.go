@@ -13,10 +13,13 @@ import (
 	userService "basic-crud-go/internal/app/admin/user/service"
 	mw "basic-crud-go/internal/app/middleware"
 	"basic-crud-go/internal/infrastructure/db/postgres"
+	mw "basic-crud-go/internal/middleware"
 
 	"github.com/gin-gonic/gin"
 )
 
+func RegisterEnterpriseRoutes(router *gin.RouterGroup, authMW *mw.Auth) {
+	db := postgres.GetDB()
 func RegisterEnterpriseRoutes(router *gin.RouterGroup) {
 	db := postgres.GetDB()
 	// Enterprise layer
