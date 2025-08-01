@@ -60,3 +60,5 @@ A API será exposta em `http://<LISTEN_SERVER>:<HTTP_PORT>` ou HTTPS caso habili
 
 ## 📝 Licença
 Este projeto está licenciado sob os termos da [MIT License](LICENSE).
+\n## Middleware
+Consulte `internal/middleware/readme.md` para saber como inicializar e reutilizar o middleware de autenticação nas rotas.
