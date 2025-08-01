@@ -130,3 +130,12 @@ func (s *authServiceImpl) GenerateTokenAPI(ctx context.Context, email, token str
 
 	return tokenApi, nil
 }
+
+func (s *authServiceImpl) GetUserIdByAPIKey(ctx context.Context, apiKey string) (string, error) {
+
+	token, err := s.repo.GetUserIdByAPIKey(ctx, apiKey)
+	if err != nil {
+		return "", err
+	}
+	return token, nil
+}

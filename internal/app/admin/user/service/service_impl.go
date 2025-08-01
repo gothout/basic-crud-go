@@ -119,6 +119,20 @@ func (s *userService) Read(ctx context.Context, email string) (*model.User, *ent
 	return user, enterprise, nil
 }
 
+func (s *userService) ReadById(ctx context.Context, id string) (*model.User, *entModel.Enterprise, error) {
+	user, err := s.repo.ReadById(ctx, id)
+
+	if err != nil {
+		return nil, nil, err
+	}
+	enterprise, err := s.enterpriseService.ReadById(ctx, user.EnterpriseId)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	return user, enterprise, nil
+}
+
 func (s *userService) Update(ctx context.Context, dto dto.UpdateUserDTO) (*model.User, *entModel.Enterprise, error) {
 	const method = "Update"
 

@@ -11,4 +11,5 @@ type AuthService interface {
 	RefreshTokenUser(ctx context.Context, email, token string) bool
 	LogoutUser(ctx context.Context, email, token string) bool
 	GenerateTokenAPI(ctx context.Context, email, token string, expiresAt time.Time) (string, error)
+	GetUserIdByAPIKey(ctx context.Context, apiKey string) (string, error)
 }

@@ -52,17 +52,36 @@ func (r *authRepositoryImpl) GenerateTokenAPI(ctx context.Context, userId string
 		logger.Log(logger.Error, module, "GenerateTokenAPI", fmt.Errorf("error generating token %w", err))
 		return "", fmt.Errorf("error generating token")
 	}
-
+	tokenApi := "api_" + token
 	query := `
 		INSERT INTO admin_api_token (user_id, token, created_at, end_date)
 		VALUES ($1, $2, $3, $4);
 	`
 
-	_, err = r.db.ExecContext(ctx, query, userId, token, createdAt, expiresAt)
+	_, err = r.db.ExecContext(ctx, query, userId, tokenApi, createdAt, expiresAt)
 	if err != nil {
 		logger.Log(logger.Error, module, "InsertTokenAPI", fmt.Errorf("error inserting API token %w", err))
 		return "", fmt.Errorf("error inserting token")
 	}
 
-	return token, nil
+	return tokenApi, nil
+}
+
+func (r *authRepositoryImpl) GetUserIdByAPIKey(ctx context.Context, apiKey string) (string, error) {
+	const query = `
+		SELECT user_id
+		FROM admin_api_token
+		WHERE token = $1
+	`
+
+	var userId string
+	err := r.db.QueryRowContext(ctx, query, apiKey).Scan(&userId)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return "", fmt.Errorf("api key not found")
+		}
+		return "", fmt.Errorf("failed to query api key: %w", err)
+	}
+
+	return userId, nil
 }
