@@ -1,10 +1,20 @@
 package middleware
 
 import (
+	"database/sql"
+	"strings"
+
+	authRepo "basic-crud-go/internal/app/admin/auth/repository"
+	authService "basic-crud-go/internal/app/admin/auth/service"
+	entRepo "basic-crud-go/internal/app/admin/enterprise/repository"
+	entService "basic-crud-go/internal/app/admin/enterprise/service"
 	adminmw "basic-crud-go/internal/app/admin/middleware/service"
+	permRepo "basic-crud-go/internal/app/admin/permission/repository"
+	permService "basic-crud-go/internal/app/admin/permission/service"
+	userRepo "basic-crud-go/internal/app/admin/user/repository"
+	userService "basic-crud-go/internal/app/admin/user/service"
 	"basic-crud-go/internal/configuration/logger"
 	"basic-crud-go/internal/configuration/rest_err"
-	"strings"
 
 	"github.com/gin-gonic/gin"
 )
@@ -15,9 +25,24 @@ type Auth struct {
 	service adminmw.MiddlewareService
 }
 
-// NewAuth creates a new Auth middleware instance.
+// NewAuth creates a new Auth middleware instance with an existing service.
 func NewAuth(service adminmw.MiddlewareService) *Auth {
 	return &Auth{service: service}
+}
+
+// NewAuthMiddleware initializes all required dependencies using the provided
+// database connection and returns a ready-to-use Auth middleware instance.
+func NewAuthMiddleware(db *sql.DB) *Auth {
+	entRepository := entRepo.NewRepositoryImpl(db)
+	entSvc := entService.NewEnterpriseService(entRepository)
+	userRepository := userRepo.NewUserRepositoryImpl(db)
+	userSvc := userService.NewUserService(userRepository, entSvc)
+	permRepository := permRepo.NewRepositoryImpl(db)
+	permSvc := permService.NewPermissionService(permRepository, userSvc)
+	authRepository := authRepo.NewAuthRepositoryImpl(db)
+	authSvc := authService.NewAuthService(authRepository, userSvc, permSvc)
+	mwSvc := adminmw.NewMiddlewareService(userSvc, authSvc, permSvc)
+	return &Auth{service: mwSvc}
 }
 
 // Handler returns a gin.HandlerFunc that validates the request's
