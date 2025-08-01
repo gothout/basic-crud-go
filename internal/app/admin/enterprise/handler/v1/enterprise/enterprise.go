@@ -20,9 +20,6 @@ import (
 
 func RegisterEnterpriseRoutes(router *gin.RouterGroup, authMW *mw.Auth) {
 	db := postgres.GetDB()
-func RegisterEnterpriseRoutes(router *gin.RouterGroup) {
-	db := postgres.GetDB()
-	// Enterprise layer
 	entRepository := entRepo.NewRepositoryImpl(db)
 	svc := service.NewEnterpriseService(entRepository)
 	ctrl := controller.NewEnterpriseController(svc)
