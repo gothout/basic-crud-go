@@ -6,6 +6,8 @@ import (
 	enterpriseHandler "basic-crud-go/internal/app/admin/enterprise/handler"
 	permissionHandler "basic-crud-go/internal/app/admin/permission/handler"
 	userHandler "basic-crud-go/internal/app/admin/user/handler"
+	"basic-crud-go/internal/infrastructure/db/postgres"
+	middleware "basic-crud-go/internal/middleware"
 	"github.com/gin-gonic/gin"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
@@ -13,8 +15,9 @@ import (
 
 func RegisterRoutes(router *gin.Engine) {
 	InitSwagger(router)
+	authMW := middleware.NewAuthMiddleware(postgres.GetDB())
 	userHandler.RegisterUserRoutes(router)
-	enterpriseHandler.RegisterEnterpriseRoutes(router)
+	enterpriseHandler.RegisterEnterpriseRoutes(router, authMW)
 	permissionHandler.RegisterPermissionRoutes(router)
 	authHandler.RegisterAuthRoutes(router)
 }
