@@ -15,9 +15,9 @@ import (
 func RegisterRoutes(router *gin.Engine) {
 	InitSwagger(router)
 	mw := middlewareHandler.InitAuthMiddleware()
-	userHandler.RegisterUserRoutes(router)
+	userHandler.RegisterUserRoutes(router, mw)
 	enterpriseHandler.RegisterEnterpriseRoutes(router, mw)
-	permissionHandler.RegisterPermissionRoutes(router)
+	permissionHandler.RegisterPermissionRoutes(router, mw)
 	authHandler.RegisterAuthRoutes(router)
 }
 
