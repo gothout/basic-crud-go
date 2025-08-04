@@ -8,11 +8,12 @@ import (
 	"basic-crud-go/internal/app/admin/permission/service"
 	userRepo "basic-crud-go/internal/app/admin/user/repository"
 	userService "basic-crud-go/internal/app/admin/user/service"
+	"basic-crud-go/internal/app/middleware"
 	"basic-crud-go/internal/infrastructure/db/postgres"
 	"github.com/gin-gonic/gin"
 )
 
-func RegisterPermissionRoutes(router *gin.RouterGroup) {
+func RegisterPermissionRoutes(router *gin.RouterGroup, mw *middleware.AuthMiddleware) {
 	db := postgres.GetDB()
 
 	// Enterprise Repository
@@ -36,12 +37,12 @@ func RegisterPermissionRoutes(router *gin.RouterGroup) {
 
 	group := router.Group("/")
 	{
-		group.GET("search/", permController.Search)
-		group.GET("read/", permController.Read)
-		group.GET("", permController.ReadAll)
-		group.GET("user/:email", permController.ReadUserPermission)
-		group.POST("apply", permController.Apply)
-		group.DELETE("user/:email", permController.RemoveBatch)
+		group.GET("search/", mw.AuthMiddleware("system", "read-permission"), permController.Search)
+		group.GET("read/", mw.AuthMiddleware("system", "read-permission"), permController.Read)
+		group.GET("", mw.AuthMiddleware("system", "read-permission"), permController.ReadAll)
+		group.GET("user/:email", mw.AuthMiddleware("system", "read-permission"), permController.ReadUserPermission)
+		group.POST("apply", mw.AuthMiddleware("system", "permission-apply-admin", "permission-apply-enterprise"), permController.Apply)
+		group.DELETE("user/:email", mw.AuthMiddleware("system", "permission-apply-admin", "permission-apply-enterprise"), permController.RemoveBatch)
 	}
 
 }

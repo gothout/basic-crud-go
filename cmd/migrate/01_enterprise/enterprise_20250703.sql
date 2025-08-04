@@ -7,5 +7,5 @@ CREATE TABLE IF NOT EXISTS enterprise (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 INSERT INTO enterprise (name, cnpj, active)
-VALUES ('System Enterprise', '00000000000000', TRUE)
+VALUES ('System Enterprise', '51016283000109', TRUE)
 ON CONFLICT DO NOTHING;

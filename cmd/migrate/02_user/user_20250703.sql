@@ -17,11 +17,11 @@ INSERT INTO "user" (id, enterprise_id, number, first_name, last_name, email, pas
 SELECT
     gen_random_uuid()::text,
     e.id,
-    '+00000000000',
+    '554791447700',
     'System',
     'Admin',
     'system@admin.local',
-    'admin123',
+    '$argon2id$v=19$m=65536,t=3,p=2$xh0OyTJkyVQzSQkFNPlOSQ$FEIU7Emdq/v83NLnkW2Da/ZuPP+ClZT2JULpU1/6t+8', --admin123
     CURRENT_TIMESTAMP,
     CURRENT_TIMESTAMP
 FROM enterprise e

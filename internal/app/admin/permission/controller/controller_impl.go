@@ -29,6 +29,7 @@ func NewPermissionController(s service.PermissionService) PermissionController {
 // @Tags         Permission
 // @Accept       json
 // @Produce      json
+// @Security     BearerAuth
 // @Param        page   query     int     false   "Page number (min 1)"
 // @Param        limit  query     int     false   "Items per page (default: 10)"
 // @Success      200   {object}  dto.ReadPermissionsResponse
@@ -64,6 +65,7 @@ func (c *permissionControllerImpl) ReadAll(ctx *gin.Context) {
 // @Tags         Permission
 // @Accept       json
 // @Produce      json
+// @Security     BearerAuth
 // @Param        code   query     string     true   "Read code (min 4 characters)"
 // @Success      200   {object}  dto.ReadPermissionResponse
 // @Failure      400   {object}  rest_err.RestErr
@@ -103,6 +105,7 @@ func (c *permissionControllerImpl) Read(ctx *gin.Context) {
 // @Tags         Permission
 // @Accept       json
 // @Produce      json
+// @Security     BearerAuth
 // @Param        query   query     string     true   "Search query (min 4 characters)"
 // @Success      200   {object}  dto.ReadPermissionsResponse
 // @Failure      400   {object}  rest_err.RestErr
@@ -139,6 +142,7 @@ func (c *permissionControllerImpl) Search(ctx *gin.Context) {
 // @Tags         Permission
 // @Accept       json
 // @Produce      json
+// @Security     BearerAuth
 // @Param        payload  body      dto.ApplyPermissionBatchDTO  true  "Email and permission codes"
 // @Success      204
 // @Failure      400   {object}  rest_err.RestErr
@@ -175,6 +179,7 @@ func (c *permissionControllerImpl) Apply(ctx *gin.Context) {
 // @Tags         Permission
 // @Accept       json
 // @Produce      json
+// @Security     BearerAuth
 // @Param        email  path     dto.ReadUserPermissionsDTO  true  "Email of the user"
 // @Success      200   {object}  dto.ReadPermissionsResponse
 // @Failure      400   {object}  rest_err.RestErr
@@ -222,6 +227,7 @@ func (c *permissionControllerImpl) ReadUserPermission(ctx *gin.Context) {
 // @Tags         Permission
 // @Accept       json
 // @Produce      json
+// @Security     BearerAuth
 // @Param        email   path      string                       true  "User email"
 // @Param        payload body      dto.DeletePermissionPayload  true  "Batch of permission codes to remove"
 // @Success      204

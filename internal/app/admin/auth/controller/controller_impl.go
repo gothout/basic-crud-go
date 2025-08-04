@@ -8,6 +8,7 @@ import (
 	permDto "basic-crud-go/internal/app/admin/permission/dto"
 	userDTO "basic-crud-go/internal/app/admin/user/dto"
 	"basic-crud-go/internal/configuration/rest_err"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
@@ -44,6 +45,7 @@ func (ac *authController) AuthLoginHandler(ctx *gin.Context) {
 	}
 	identity, err := ac.service.LoginUser(ctx, req.Email, req.Password)
 	if err != nil {
+		fmt.Println(err)
 		restErr := rest_err.NewForbiddenError("Unable to process your login")
 		ctx.JSON(restErr.Code, restErr)
 		return

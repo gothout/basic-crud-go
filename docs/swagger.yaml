@@ -419,6 +419,8 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/rest_err.RestErr'
+      security:
+      - BearerAuth: []
       summary: Create enterprise
       tags:
       - Enterprise
@@ -448,6 +450,8 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/rest_err.RestErr'
+      security:
+      - BearerAuth: []
       summary: Update enterprise
       tags:
       - Enterprise
@@ -475,6 +479,8 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/rest_err.RestErr'
+      security:
+      - BearerAuth: []
       summary: Delete enterprise
       tags:
       - Enterprise
@@ -507,6 +513,8 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/rest_err.RestErr'
+      security:
+      - BearerAuth: []
       summary: List enterprises
       tags:
       - Enterprise
@@ -536,6 +544,8 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/rest_err.RestErr'
+      security:
+      - BearerAuth: []
       summary: Read enterprise
       tags:
       - Enterprise
@@ -568,6 +578,8 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/rest_err.RestErr'
+      security:
+      - BearerAuth: []
       summary: Read permissions
       tags:
       - Permission
@@ -596,6 +608,8 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/rest_err.RestErr'
+      security:
+      - BearerAuth: []
       summary: Apply permissions to user
       tags:
       - Permission
@@ -625,6 +639,8 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/rest_err.RestErr'
+      security:
+      - BearerAuth: []
       summary: Read permission
       tags:
       - Permission
@@ -654,6 +670,8 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/rest_err.RestErr'
+      security:
+      - BearerAuth: []
       summary: Search permissions
       tags:
       - Permission
@@ -691,6 +709,8 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/rest_err.RestErr'
+      security:
+      - BearerAuth: []
       summary: Remove permissions from user
       tags:
       - Permission
@@ -722,6 +742,8 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/rest_err.RestErr'
+      security:
+      - BearerAuth: []
       summary: Read user permissions
       tags:
       - Permission
@@ -756,6 +778,8 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/rest_err.RestErr'
+      security:
+      - BearerAuth: []
       summary: Create user
       tags:
       - User
@@ -787,6 +811,8 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/rest_err.RestErr'
+      security:
+      - BearerAuth: []
       summary: Delete user
       tags:
       - User
@@ -819,6 +845,8 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/rest_err.RestErr'
+      security:
+      - BearerAuth: []
       summary: Read user
       tags:
       - User
@@ -857,6 +885,8 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/rest_err.RestErr'
+      security:
+      - BearerAuth: []
       summary: Update user
       tags:
       - User
@@ -893,6 +923,8 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/rest_err.RestErr'
+      security:
+      - BearerAuth: []
       summary: List users
       tags:
       - User
@@ -934,6 +966,8 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/rest_err.RestErr'
+      security:
+      - BearerAuth: []
       summary: List users by CNPJ
       tags:
       - User

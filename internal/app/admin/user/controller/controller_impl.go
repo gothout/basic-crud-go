@@ -29,6 +29,7 @@ func NewUserController(s service.UserService) UserController {
 // @Tags         User
 // @Accept       json
 // @Produce      json
+// @Security     BearerAuth
 // @Param        request  body      dto.CreateUserDTO       true "User Data"
 // @Success      201      {object}  dto.CreateUserResponse
 // @Failure      400      {object}  rest_err.RestErr
@@ -93,6 +94,7 @@ func (c *userController) CreateUserHandler(ctx *gin.Context) {
 // @Tags         User
 // @Accept       json
 // @Produce      json
+// @Security     BearerAuth
 // @Param        page   query     int     false   "Page number (min 1)"
 // @Param        limit  query     int     false   "Items per page (default: 10)"
 // @Success      200    {object}  dto.ReadUsersResponse
@@ -142,6 +144,7 @@ func (c *userController) ReadUsersHandler(ctx *gin.Context) {
 // @Tags         User
 // @Accept       json
 // @Produce      json
+// @Security     BearerAuth
 // @Param        cnpj   query     string  true    "CNPJ enterprise"
 // @Param        page   query     int     false   "Page number (min 1)"
 // @Param        limit  query     int     false   "Items per page (default: 10)"
@@ -207,6 +210,7 @@ func (c *userController) ReadUsersByCnpjHandler(ctx *gin.Context) {
 // @Tags         User
 // @Accept       json
 // @Produce      json
+// @Security     BearerAuth
 // @Param        email 	   path     string  true "User email"
 // @Success      201      {object}  dto.ReadUserResponse
 // @Failure      400      {object}  rest_err.RestErr
@@ -259,6 +263,7 @@ func (c *userController) ReadUserHandler(ctx *gin.Context) {
 // @Tags         User
 // @Accept       json
 // @Produce      json
+// @Security     BearerAuth
 // @Param        email    path      string              true  "User email"
 // @Param        request  body      dto.UpdateUserDTO   true  "User update data"
 // @Success      200      {object}  dto.UpdateUserResponse
@@ -319,6 +324,7 @@ func (c *userController) UpdateUserHandler(ctx *gin.Context) {
 // @Tags         User
 // @Accept       json
 // @Produce      json
+// @Security     BearerAuth
 // @Param        email 	   path     string  true "User email"
 // @Success      204
 // @Failure      400      {object}  rest_err.RestErr

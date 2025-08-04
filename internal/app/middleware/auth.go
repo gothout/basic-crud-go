@@ -14,8 +14,8 @@ func NewAuthMiddleware(service adminMiddlewareService.MiddlewareService) *AuthMi
 	return &AuthMiddleware{service: service}
 }
 
-// AuthMiddleware validates API key and required permission.
-func (m *AuthMiddleware) AuthMiddleware(requiredCode string) gin.HandlerFunc {
+// AuthMiddleware validates API key and required permission(s).
+func (m *AuthMiddleware) AuthMiddleware(requiredCodes ...string) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		authHeader := ctx.GetHeader("Authorization")
 		if len(authHeader) < 8 || authHeader[:7] != "Bearer " {
@@ -23,6 +23,7 @@ func (m *AuthMiddleware) AuthMiddleware(requiredCode string) gin.HandlerFunc {
 			ctx.AbortWithStatusJSON(restErr.Code, restErr)
 			return
 		}
+
 		apiKey := authHeader[7:]
 		identity, err := m.service.ValidateApiKey(ctx.Request.Context(), apiKey)
 		if err != nil {
@@ -30,11 +31,13 @@ func (m *AuthMiddleware) AuthMiddleware(requiredCode string) gin.HandlerFunc {
 			ctx.AbortWithStatusJSON(restErr.Code, restErr)
 			return
 		}
-		if requiredCode != "" && !m.service.HasPermission(requiredCode, identity.Permissions) {
+
+		if len(requiredCodes) > 0 && !m.service.HasPermission(requiredCodes, identity.Permissions) {
 			restErr := rest_err.NewForbiddenError("Permission denied")
 			ctx.AbortWithStatusJSON(restErr.Code, restErr)
 			return
 		}
+
 		ctx.Set("identity", identity)
 		ctx.Next()
 	}

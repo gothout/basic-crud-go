@@ -57,15 +57,22 @@ func (m middlewareServiceImpl) ValidateApiKey(ctx context.Context, apiKey string
 	return identity, nil
 }
 
-// HasPermission checks if a specific permission code exists in the user's permissions.
-func (m middlewareServiceImpl) HasPermission(requiredCode string, permissions *[]model.UserPermissions) bool {
+// HasPermission checks if any of the required permission codes exist in the user's permissions.
+func (m middlewareServiceImpl) HasPermission(requiredCodes []string, permissions *[]model.UserPermissions) bool {
 	if permissions == nil {
 		return false
 	}
+
 	for _, p := range *permissions {
-		if p.Permission != nil && p.Permission.Code == requiredCode {
-			return true
+		if p.Permission == nil {
+			continue
+		}
+		for _, code := range requiredCodes {
+			if p.Permission.Code == code {
+				return true
+			}
 		}
 	}
+
 	return false
 }

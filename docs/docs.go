@@ -218,6 +218,11 @@ const docTemplate = `{
         },
         "/enterprise/v1/": {
             "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Update enterprise by CNPJ",
                 "consumes": [
                     "application/json"
@@ -262,6 +267,11 @@ const docTemplate = `{
                 }
             },
             "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Create enterprise by CNPJ and name",
                 "consumes": [
                     "application/json"
@@ -308,6 +318,11 @@ const docTemplate = `{
         },
         "/enterprise/v1/read": {
             "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Retrieve a paginated list of enterprises",
                 "consumes": [
                     "application/json"
@@ -357,6 +372,11 @@ const docTemplate = `{
         },
         "/enterprise/v1/read/{cnpj}": {
             "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Read enterprise by CNPJ",
                 "consumes": [
                     "application/json"
@@ -401,6 +421,11 @@ const docTemplate = `{
         },
         "/enterprise/v1/{cnpj}": {
             "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Delete an enterprise by CNPJ",
                 "consumes": [
                     "application/json"
@@ -442,6 +467,11 @@ const docTemplate = `{
         },
         "/permission/v1/": {
             "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Retrieve a paginated list of permissions names",
                 "consumes": [
                     "application/json"
@@ -491,6 +521,11 @@ const docTemplate = `{
         },
         "/permission/v1/apply": {
             "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Apply a batch of permissions to a user by email",
                 "consumes": [
                     "application/json"
@@ -534,6 +569,11 @@ const docTemplate = `{
         },
         "/permission/v1/read": {
             "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Read permissions by full code name",
                 "consumes": [
                     "application/json"
@@ -578,6 +618,11 @@ const docTemplate = `{
         },
         "/permission/v1/search": {
             "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Search permissions by partial or full code name",
                 "consumes": [
                     "application/json"
@@ -622,6 +667,11 @@ const docTemplate = `{
         },
         "/permission/v1/user/{email}": {
             "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Read all permissions assigned to a user by email",
                 "consumes": [
                     "application/json"
@@ -669,6 +719,11 @@ const docTemplate = `{
                 }
             },
             "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Remove a batch of permissions from a user by email",
                 "consumes": [
                     "application/json"
@@ -725,6 +780,11 @@ const docTemplate = `{
         },
         "/user/v1/": {
             "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Create user by CNPJ, name and email",
                 "consumes": [
                     "application/json"
@@ -777,6 +837,11 @@ const docTemplate = `{
         },
         "/user/v1/read": {
             "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Retrieve a paginated list of users",
                 "consumes": [
                     "application/json"
@@ -832,6 +897,11 @@ const docTemplate = `{
         },
         "/user/v1/read/enterprise": {
             "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Retrieve a paginated list of users",
                 "consumes": [
                     "application/json"
@@ -894,6 +964,11 @@ const docTemplate = `{
         },
         "/user/v1/{email}": {
             "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Read user by email",
                 "consumes": [
                     "application/json"
@@ -942,6 +1017,11 @@ const docTemplate = `{
                 }
             },
             "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Update user by email (URI param) and update fields from body",
                 "consumes": [
                     "application/json"
@@ -999,6 +1079,11 @@ const docTemplate = `{
                 }
             },
             "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Delete user by email",
                 "consumes": [
                     "application/json"

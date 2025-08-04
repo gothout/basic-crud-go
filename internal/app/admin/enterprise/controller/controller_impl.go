@@ -27,6 +27,7 @@ func NewEnterpriseController(s service.EnterpriseService) EnterpriseController {
 // @Tags 				Enterprise
 // @Accept       		json
 // @Produce      		json
+// @Security     BearerAuth
 // @Param				request		body 		dto.CreateEnterpriseDTO true "Company data"
 // @Success      		200     	{object}  	dto.CreateEnterpriseResponse
 // @Failure      		400      	{object}  	rest_err.RestErr
@@ -70,6 +71,7 @@ func (c *enterpriseController) CreateEnterpriseHandler(ctx *gin.Context) {
 // @Tags         Enterprise
 // @Accept       json
 // @Produce      json
+// @Security     BearerAuth
 // @Param        cnpj  path      string  true  "CNPJ of the enterprise"
 // @Success      200   {object}  dto.ReadEnterpriseResponse
 // @Failure      400   {object}  rest_err.RestErr
@@ -106,6 +108,7 @@ func (c *enterpriseController) ReadEnterpriseHandler(ctx *gin.Context) {
 // @Tags         Enterprise
 // @Accept       json
 // @Produce      json
+// @Security     BearerAuth
 // @Param        page   query     int     false   "Page number (min 1)"
 // @Param        limit  query     int     false   "Items per page (default: 10)"
 // @Success      200    {object}  dto.ReadEnterprisesResponse
@@ -157,6 +160,7 @@ func (c *enterpriseController) ReadEnterprisesHandler(ctx *gin.Context) {
 // @Tags 				Enterprise
 // @Accept       		json
 // @Produce      		json
+// @Security     BearerAuth
 // @Param				request		body 		dto.UpdateEnterpriseDTO true "Company data"
 // @Success      		200     	{object}  	dto.UpdateEnterpriseResponse
 // @Failure      		400      	{object}  	rest_err.RestErr
@@ -210,6 +214,7 @@ func (c *enterpriseController) UpdateEnterpriseHandler(ctx *gin.Context) {
 // @Tags         Enterprise
 // @Accept       json
 // @Produce      json
+// @Security     BearerAuth
 // @Param        cnpj  path      string  true  "CNPJ of the enterprise"
 // @Success      204   "No content"
 // @Failure      400   {object}  rest_err.RestErr
