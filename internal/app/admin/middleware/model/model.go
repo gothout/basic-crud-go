@@ -11,7 +11,6 @@ type UserIndentity struct {
 	Enterprise  *entModel.Enterprise
 	Permissions *[]UserPermissions
 }
-
 type UserPermissions struct {
 	Permission *permModel.Permission
 }

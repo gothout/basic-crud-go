@@ -3,6 +3,7 @@ package server
 import (
 	_ "basic-crud-go/docs"
 	authHandler "basic-crud-go/internal/app/admin/auth/handler"
+	diAdmin "basic-crud-go/internal/app/admin/di"
 	enterpriseHandler "basic-crud-go/internal/app/admin/enterprise/handler"
 	permissionHandler "basic-crud-go/internal/app/admin/permission/handler"
 	userHandler "basic-crud-go/internal/app/admin/user/handler"
@@ -13,11 +14,13 @@ import (
 )
 
 func RegisterRoutes(router *gin.Engine) {
+	// Instance admin controllers
+	container := diAdmin.NewContainer()
 	InitSwagger(router)
 	mw := middlewareHandler.InitAuthMiddleware()
-	userHandler.RegisterUserRoutes(router, mw)
-	enterpriseHandler.RegisterEnterpriseRoutes(router, mw)
-	permissionHandler.RegisterPermissionRoutes(router, mw)
+	enterpriseHandler.RegisterEnterpriseRoutes(router, mw, container.GetEnterpriseController())
+	userHandler.RegisterUserRoutes(router, mw, container.GetUserController())
+	permissionHandler.RegisterPermissionRoutes(router, mw, container.GetPermissionController())
 	authHandler.RegisterAuthRoutes(router)
 }
 

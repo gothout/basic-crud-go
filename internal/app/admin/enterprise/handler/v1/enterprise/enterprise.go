@@ -2,21 +2,13 @@ package enterprise
 
 import (
 	"basic-crud-go/internal/app/admin/enterprise/controller"
-	"basic-crud-go/internal/app/admin/enterprise/repository"
-	"basic-crud-go/internal/app/admin/enterprise/service"
+
 	middleware "basic-crud-go/internal/app/middleware"
-	"basic-crud-go/internal/infrastructure/db/postgres"
 
 	"github.com/gin-gonic/gin"
 )
 
-func RegisterEnterpriseRoutes(router *gin.RouterGroup, mw *middleware.AuthMiddleware) {
-	// Repository
-	repo := repository.NewRepositoryImpl(postgres.GetDB())
-	//Service
-	svc := service.NewEnterpriseService(repo)
-	//Controller
-	ctrl := controller.NewEnterpriseController(svc)
+func RegisterEnterpriseRoutes(router *gin.RouterGroup, mw *middleware.AuthMiddleware, ctrl controller.EnterpriseController) {
 
 	group := router.Group("/")
 	{
