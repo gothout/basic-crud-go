@@ -31,6 +31,11 @@ func NewAuthService(repo repository.AuthRepository, userService userService.User
 func (s *authServiceImpl) LoginUser(ctx context.Context, email, password string) (*model.UserIdentity, error) {
 	// check if token exists in cache
 	if identity, found := tokencache.GetToken(email); found {
+		// validate password user
+		err := security.Compare(identity.User.Password, password)
+		if err != nil {
+			return nil, err
+		}
 		return identity, nil
 	}
 
