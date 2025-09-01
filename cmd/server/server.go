@@ -15,6 +15,7 @@ func InitServer() *gin.Engine {
 	router := gin.Default()
 	devCors, prodCors := envServer.GetCorsOrigins()
 	if env.GetEnvironment() == "DEV" {
+		fmt.Println("Running in DEV")
 		gin.SetMode(gin.DebugMode)
 		// Cors set
 		config := cors.Config{
@@ -29,6 +30,7 @@ func InitServer() *gin.Engine {
 		router.Use(cors.New(config))
 	}
 	if env.GetEnvironment() == "PROD" {
+		fmt.Println("Running in PROD")
 		gin.SetMode(gin.ReleaseMode)
 		// Cors set
 		config := cors.Config{
