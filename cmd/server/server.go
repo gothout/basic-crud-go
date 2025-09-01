@@ -12,12 +12,22 @@ import (
 )
 
 func InitServer() *gin.Engine {
-	router := gin.Default()
+	environment := env.GetEnvironment()
 	devCors, prodCors := envServer.GetCorsOrigins()
-	if env.GetEnvironment() == "DEV" {
+
+	switch environment {
+	case "DEV":
 		fmt.Println("Running in DEV")
 		gin.SetMode(gin.DebugMode)
-		// Cors set
+	case "PROD":
+		fmt.Println("Running in PROD")
+		gin.SetMode(gin.ReleaseMode)
+	}
+
+	router := gin.Default()
+
+	switch environment {
+	case "DEV":
 		config := cors.Config{
 			AllowOrigins: []string{
 				fmt.Sprintf("http://%s", devCors),
@@ -28,11 +38,7 @@ func InitServer() *gin.Engine {
 			AllowCredentials: true,
 		}
 		router.Use(cors.New(config))
-	}
-	if env.GetEnvironment() == "PROD" {
-		fmt.Println("Running in PROD")
-		gin.SetMode(gin.ReleaseMode)
-		// Cors set
+	case "PROD":
 		config := cors.Config{
 			AllowOrigins:     []string{fmt.Sprintf("https://%s", prodCors)},
 			AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
