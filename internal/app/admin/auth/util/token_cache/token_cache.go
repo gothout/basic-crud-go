@@ -19,13 +19,13 @@ type tokenCache struct {
 	ttl    time.Duration
 }
 
-// singleton instance of the cache with default TTL of 10 seconds
+// singleton instance of the cache with default TTL of 1 hour
 var cache = &tokenCache{
 	tokens: make(map[string]*cacheEntry),
 	ttl:    1 * time.Hour,
 }
 
-// SaveToken stores the user identity in the cache using email as key
+// SaveToken stores the user identity in the cache using the email as key
 func SaveToken(email string, identity *model.UserIdentity) {
 	cache.mu.Lock()
 	defer cache.mu.Unlock()
@@ -36,8 +36,8 @@ func SaveToken(email string, identity *model.UserIdentity) {
 	}
 }
 
-// GetToken retrieves the cached user identity if it hasn't expired
-// Returns (identity, true) if found and valid; otherwise (nil, false)
+// GetToken retrieves the cached user identity if it has not expired.
+// Returns (identity, true) if found and valid; otherwise (nil, false).
 func GetToken(email string) (*model.UserIdentity, bool) {
 	cache.mu.RLock()
 	defer cache.mu.RUnlock()
@@ -49,7 +49,31 @@ func GetToken(email string) (*model.UserIdentity, bool) {
 	return entry.Identity, true
 }
 
-// RefreshToken updates the expiration time to 1 hour if the token matches
+// GetByUserToken retrieves the cached user identity by user token if it has not expired.
+// Returns (identity, true) if found and valid; otherwise (nil, false).
+func GetByUserToken(token string) (*model.UserIdentity, bool) {
+	cache.mu.RLock()
+	defer cache.mu.RUnlock()
+
+	for _, entry := range cache.tokens {
+		if entry == nil || entry.Identity == nil || entry.Identity.TokenUser == nil {
+			continue
+		}
+
+		// Skip expired entries
+		if time.Now().After(entry.ExpiresAt) {
+			continue
+		}
+
+		if entry.Identity.TokenUser.Token == token {
+			return entry.Identity, true
+		}
+	}
+
+	return nil, false
+}
+
+// RefreshToken updates the expiration time to 1 hour if the provided token matches.
 func RefreshToken(email string, token string) bool {
 	cache.mu.Lock()
 	defer cache.mu.Unlock()
@@ -68,7 +92,7 @@ func RefreshToken(email string, token string) bool {
 	return true
 }
 
-// Logout removes the token from cache only if the provided token matches
+// Logout removes the token from cache only if the provided token matches.
 func Logout(email, token string) bool {
 	cache.mu.Lock()
 	defer cache.mu.Unlock()

@@ -144,3 +144,19 @@ func (s *authServiceImpl) GetUserIdByAPIKey(ctx context.Context, apiKey string) 
 	}
 	return token, nil
 }
+
+func (s *authServiceImpl) GetUserIdByUserKey(ctx context.Context, apiKey string) (string, error) {
+	token, err := s.repo.GetValidUserIdByToken(ctx, apiKey)
+	if err != nil {
+		return "", err
+	}
+	return token, nil
+}
+
+func (s *authServiceImpl) GetUserIdentiyByCache(ctx context.Context, userKey string) (*model.UserIdentity, error) {
+	// check if token exists in cache
+	if identity, found := tokencache.GetByUserToken(userKey); found {
+		return identity, nil
+	}
+	return nil, nil
+}

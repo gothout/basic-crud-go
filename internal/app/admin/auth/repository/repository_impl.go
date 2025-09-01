@@ -11,4 +11,5 @@ type AuthRepository interface {
 	GenerateTokenUser(ctx context.Context, userId string, createdAt time.Time) (*model.TokenUser, error)
 	GenerateTokenAPI(ctx context.Context, userId string, createdAt, ExpiresAt time.Time) (string, error)
 	GetUserIdByAPIKey(ctx context.Context, apiKey string) (string, error)
+	GetValidUserIdByToken(ctx context.Context, token string) (string, error)
 }

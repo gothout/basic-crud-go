@@ -22,6 +22,71 @@ func NewMiddlewareService(userService userService.UserService, authService authS
 	}
 }
 
+func (m middlewareServiceImpl) ValidateUserKey(ctx context.Context, apiUserKey string) (*model.UserIndentity, error) {
+	// validate token by cached
+	userIdentity, err := m.authService.GetUserIdentiyByCache(ctx, apiUserKey)
+	if err != nil {
+		return nil, err
+	}
+	if userIdentity != nil {
+		// get permissions user
+		perms, err := m.permissionService.ReadPermissionsUser(ctx, userIdentity.User.Email)
+		if err != nil {
+			return nil, err
+		}
+		// convert to []UserPermissions
+		var permissions []model.UserPermissions
+		for _, perm := range perms {
+			p := perm
+			permissions = append(permissions, model.UserPermissions{
+				Permission: &p,
+			})
+		}
+		identity := &model.UserIndentity{
+			User:        userIdentity.User,
+			Enterprise:  userIdentity.Enterprise,
+			Permissions: &permissions,
+		}
+
+		return identity, nil
+	} else {
+		// validate token by database
+		// validate token
+		userId, err := m.authService.GetUserIdByUserKey(ctx, apiUserKey)
+		if err != nil {
+			return nil, err
+		}
+		// get identity
+		user, enterprise, err := m.userService.ReadById(ctx, userId)
+		if err != nil {
+			return nil, err
+		}
+		// get permissions user
+		perms, err := m.permissionService.ReadPermissionsUser(ctx, user.Email)
+		if err != nil {
+			return nil, err
+		}
+
+		// convert to []UserPermissions
+		var permissions []model.UserPermissions
+		for _, perm := range perms {
+			p := perm
+			permissions = append(permissions, model.UserPermissions{
+				Permission: &p,
+			})
+		}
+
+		identity := &model.UserIndentity{
+			User:        user,
+			Enterprise:  enterprise,
+			Permissions: &permissions,
+		}
+
+		return identity, nil
+	}
+
+}
+
 func (m middlewareServiceImpl) ValidateApiKey(ctx context.Context, apiKey string) (*model.UserIndentity, error) {
 	// validate token
 	userId, err := m.authService.GetUserIdByAPIKey(ctx, apiKey)

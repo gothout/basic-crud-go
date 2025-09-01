@@ -4,6 +4,7 @@ import (
 	adminMiddlewareService "basic-crud-go/internal/app/admin/middleware/service"
 	"basic-crud-go/internal/configuration/rest_err"
 	"github.com/gin-gonic/gin"
+	"strings"
 )
 
 type AuthMiddleware struct {
@@ -25,20 +26,37 @@ func (m *AuthMiddleware) AuthMiddleware(requiredCodes ...string) gin.HandlerFunc
 		}
 
 		apiKey := authHeader[7:]
-		identity, err := m.service.ValidateApiKey(ctx.Request.Context(), apiKey)
-		if err != nil {
-			restErr := rest_err.NewForbiddenError("Invalid credentials")
-			ctx.AbortWithStatusJSON(restErr.Code, restErr)
-			return
-		}
 
-		if len(requiredCodes) > 0 && !m.service.HasPermission(requiredCodes, identity.Permissions) {
-			restErr := rest_err.NewForbiddenError("Permission denied")
-			ctx.AbortWithStatusJSON(restErr.Code, restErr)
-			return
+		// validates whether it is an API KEY or a user KEY at the beginning
+		if strings.Contains(apiKey, "api") {
+			identity, err := m.service.ValidateApiKey(ctx.Request.Context(), apiKey)
+			if err != nil {
+				restErr := rest_err.NewForbiddenError("Invalid credentials")
+				ctx.AbortWithStatusJSON(restErr.Code, restErr)
+				return
+			}
+			if len(requiredCodes) > 0 && !m.service.HasPermission(requiredCodes, identity.Permissions) {
+				restErr := rest_err.NewForbiddenError("Permission denied")
+				ctx.AbortWithStatusJSON(restErr.Code, restErr)
+				return
+			}
+			ctx.Set("identity", identity)
+			ctx.Next()
+		} else {
+			// validate user key
+			identity, err := m.service.ValidateUserKey(ctx.Request.Context(), apiKey)
+			if err != nil {
+				restErr := rest_err.NewForbiddenError("Invalid credentials")
+				ctx.AbortWithStatusJSON(restErr.Code, restErr)
+				return
+			}
+			if len(requiredCodes) > 0 && !m.service.HasPermission(requiredCodes, identity.Permissions) {
+				restErr := rest_err.NewForbiddenError("Permission denied")
+				ctx.AbortWithStatusJSON(restErr.Code, restErr)
+				return
+			}
+			ctx.Set("identity", identity)
+			ctx.Next()
 		}
-
-		ctx.Set("identity", identity)
-		ctx.Next()
 	}
 }
