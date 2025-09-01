@@ -2,6 +2,7 @@ package controller
 
 import (
 	entepriseDto "basic-crud-go/internal/app/admin/enterprise/dto"
+	mwUtil "basic-crud-go/internal/app/admin/middleware/util"
 	"basic-crud-go/internal/app/admin/user/binding"
 	"basic-crud-go/internal/app/admin/user/dto"
 	"basic-crud-go/internal/app/admin/user/service"
@@ -33,43 +34,76 @@ func NewUserController(s service.UserService) UserController {
 // @Param        request  body      dto.CreateUserDTO       true "User Data"
 // @Success      201      {object}  dto.CreateUserResponse
 // @Failure      400      {object}  rest_err.RestErr
-// @Failure		 404	  {object}	rest_err.RestErr
+// @Failure      404      {object}  rest_err.RestErr
 // @Failure      500      {object}  rest_err.RestErr
 // @Router       /user/v1/ [post]
 func (c *userController) CreateUserHandler(ctx *gin.Context) {
 	var req dto.CreateUserDTO
 
-	// Parse request body
+	// 1) Parse request body
 	if err := ctx.ShouldBindJSON(&req); err != nil {
-		restErr := rest_err.NewBadRequestValidationError("Missing or invalid required fields", []rest_err.Causes{
-			rest_err.NewCause("body", err.Error()),
-		})
+		restErr := rest_err.NewBadRequestValidationError("Missing or invalid required fields",
+			[]rest_err.Causes{rest_err.NewCause("body", err.Error())})
 		ctx.JSON(restErr.Code, restErr)
 		return
 	}
 
-	// Validate DTO
+	// 2) Validate DTO
 	if err := binding.ValidateCreateUserDTO(req); err != nil {
-		restErr := rest_err.NewBadRequestValidationError("Invalid request body", []rest_err.Causes{
-			rest_err.NewCause("validation", err.Error()),
-		})
+		restErr := rest_err.NewBadRequestValidationError("Invalid request body",
+			[]rest_err.Causes{rest_err.NewCause("validation", err.Error())})
 		ctx.JSON(restErr.Code, restErr)
 		return
 	}
-	var Cnpj string = util.RemoveNonDigits(req.Cnpj)
-	var Number string = util.RemoveNonDigits(req.Number)
 
-	// Create user
+	// 3) Get identity from context (set by AuthMiddleware)
+	identity, rerr := mwUtil.GetIdentity(ctx)
+	if rerr != nil {
+		restErr := rest_err.NewBadRequestValidationError("Invalid request body",
+			[]rest_err.Causes{rest_err.NewCause("context", rerr.Error())})
+		ctx.JSON(restErr.Code, restErr)
+		return
+	}
+
+	// 4) Permission checks
+	hasSystem := mwUtil.HasPermission(identity.Permissions, "system")
+	hasCreateOwn := mwUtil.HasPermission(identity.Permissions, "create-user-enterprise")
+	hasCreateAdmin := mwUtil.HasPermission(identity.Permissions, "create-user-admin")
+
+	// User has no permission to create any user
+	if !(hasSystem || hasCreateOwn || hasCreateAdmin) {
+		restErr := rest_err.NewForbiddenError("you do not have permission to create users")
+		ctx.JSON(restErr.Code, restErr)
+		return
+	}
+
+	// User can only create users in their own enterprise
+	if hasCreateOwn && !hasSystem && !hasCreateAdmin {
+		// if request CNPJ is different, deny
+		if req.Cnpj != "" && util.RemoveNonDigits(req.Cnpj) != util.RemoveNonDigits(identity.Enterprise.Cnpj) {
+			restErr := rest_err.NewForbiddenError("you can only create users for your own enterprise")
+			ctx.JSON(restErr.Code, restErr)
+			return
+		}
+		// force enterprise CNPJ from identity
+		req.Cnpj = identity.Enterprise.Cnpj
+	}
+
+	// 5) Normalize inputs
+	cnpj := util.RemoveNonDigits(req.Cnpj)
+	number := util.RemoveNonDigits(req.Number)
+
+	// 6) Call service
 	created, err := c.service.Create(ctx,
-		Cnpj,
-		Number,
+		cnpj,
+		number,
 		req.FirstName,
 		req.LastName,
 		req.Email,
 		req.Password,
 	)
 	if err != nil && strings.Contains(err.Error(), "nao encontrada") {
-		restErr := rest_err.NewNotFoundError(fmt.Sprintf("cnpj %s not found", util.RemoveNonDigits(req.Cnpj)))
+		restErr := rest_err.NewNotFoundError(fmt.Sprintf("cnpj %s not found", cnpj))
 		ctx.JSON(restErr.Code, restErr)
 		return
 	}
@@ -79,8 +113,9 @@ func (c *userController) CreateUserHandler(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(http.StatusOK, &dto.CreateUserResponse{
-		Cnpj:      Cnpj,
+	// 7) Return 201 Created
+	ctx.JSON(http.StatusCreated, &dto.CreateUserResponse{
+		Cnpj:      cnpj,
 		FirstName: created.FirstName,
 		LastName:  created.LastName,
 		Email:     created.Email,

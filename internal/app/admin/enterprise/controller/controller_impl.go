@@ -5,10 +5,10 @@ import (
 	"basic-crud-go/internal/app/admin/enterprise/dto"
 	"basic-crud-go/internal/app/admin/enterprise/service"
 	"basic-crud-go/internal/app/admin/enterprise/util"
-	"basic-crud-go/internal/configuration/rest_err"
-	"net/http"
 
+	"basic-crud-go/internal/configuration/rest_err"
 	"github.com/gin-gonic/gin"
+	"net/http"
 )
 
 type enterpriseController struct {
@@ -51,6 +51,7 @@ func (c *enterpriseController) CreateEnterpriseHandler(ctx *gin.Context) {
 		ctx.JSON(restErr.Code, restErr)
 		return
 	}
+
 	// Create enterprise
 	created, err := c.service.Create(ctx, req.Name, util.RemoveNonDigits(req.Cnpj))
 	if err != nil {
