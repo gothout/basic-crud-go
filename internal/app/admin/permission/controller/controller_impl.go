@@ -1,6 +1,7 @@
 package controller
 
 import (
+	mwUtil "basic-crud-go/internal/app/admin/middleware/util"
 	"basic-crud-go/internal/app/admin/permission/binding"
 	"basic-crud-go/internal/app/admin/permission/dto"
 	"basic-crud-go/internal/app/admin/permission/service"
@@ -38,6 +39,25 @@ func NewPermissionController(s service.PermissionService) PermissionController {
 // @Router       /permission/v1/ [get]
 func (c *permissionControllerImpl) ReadAll(ctx *gin.Context) {
 	req := binding.ValidatePermissionsDTO(ctx)
+
+	// 1) Get identity from context (set by AuthMiddleware)
+	identity, rerr := mwUtil.GetIdentity(ctx)
+	if rerr != nil {
+		restErr := rest_err.NewBadRequestValidationError("invalid request body", []rest_err.Causes{
+			rest_err.NewCause("context", rerr.Error()),
+		})
+		ctx.JSON(restErr.Code, restErr)
+		return
+	}
+
+	// 2) Permission checks
+	hasSystem := mwUtil.HasPermission(identity.Permissions, "system")
+	hasRead := mwUtil.HasPermission(identity.Permissions, "read-permission")
+	if !(hasSystem || hasRead) {
+		restErr := rest_err.NewForbiddenError("you do not have permission to read permissions")
+		ctx.JSON(restErr.Code, restErr)
+		return
+	}
 
 	perms, err := c.service.ReadAllPermissions(ctx, req.Page, req.Limit)
 	if err != nil {
@@ -77,6 +97,25 @@ func (c *permissionControllerImpl) Read(ctx *gin.Context) {
 		restErr := rest_err.NewBadRequestValidationError("invalid query", []rest_err.Causes{
 			rest_err.NewCause("validation", err.Error()),
 		})
+		ctx.JSON(restErr.Code, restErr)
+		return
+	}
+
+	// 1) Get identity from context (set by AuthMiddleware)
+	identity, rerr := mwUtil.GetIdentity(ctx)
+	if rerr != nil {
+		restErr := rest_err.NewBadRequestValidationError("invalid request body", []rest_err.Causes{
+			rest_err.NewCause("context", rerr.Error()),
+		})
+		ctx.JSON(restErr.Code, restErr)
+		return
+	}
+
+	// 2) Permission checks
+	hasSystem := mwUtil.HasPermission(identity.Permissions, "system")
+	hasRead := mwUtil.HasPermission(identity.Permissions, "read-permission")
+	if !(hasSystem || hasRead) {
+		restErr := rest_err.NewForbiddenError("you do not have permission to read permissions")
 		ctx.JSON(restErr.Code, restErr)
 		return
 	}
@@ -121,6 +160,25 @@ func (c *permissionControllerImpl) Search(ctx *gin.Context) {
 		return
 	}
 
+	// 1) Get identity from context (set by AuthMiddleware)
+	identity, rerr := mwUtil.GetIdentity(ctx)
+	if rerr != nil {
+		restErr := rest_err.NewBadRequestValidationError("invalid request body", []rest_err.Causes{
+			rest_err.NewCause("context", rerr.Error()),
+		})
+		ctx.JSON(restErr.Code, restErr)
+		return
+	}
+
+	// 2) Permission checks
+	hasSystem := mwUtil.HasPermission(identity.Permissions, "system")
+	hasRead := mwUtil.HasPermission(identity.Permissions, "read-permission")
+	if !(hasSystem || hasRead) {
+		restErr := rest_err.NewForbiddenError("you do not have permission to read permissions")
+		ctx.JSON(restErr.Code, restErr)
+		return
+	}
+
 	perms, err := c.service.Search(ctx, req.Query)
 
 	var responses []dto.ReadPermissionResponse
@@ -158,6 +216,37 @@ func (c *permissionControllerImpl) Apply(ctx *gin.Context) {
 		return
 	}
 
+	// 1) Get identity from context (set by AuthMiddleware)
+	identity, rerr := mwUtil.GetIdentity(ctx)
+	if rerr != nil {
+		restErr := rest_err.NewBadRequestValidationError("invalid request body", []rest_err.Causes{
+			rest_err.NewCause("context", rerr.Error()),
+		})
+		ctx.JSON(restErr.Code, restErr)
+		return
+	}
+
+	// 2) Permission checks
+	hasSystem := mwUtil.HasPermission(identity.Permissions, "system")
+	hasApplyAdmin := mwUtil.HasPermission(identity.Permissions, "permission-apply-admin")
+	hasApplyEnterprise := mwUtil.HasPermission(identity.Permissions, "permission-apply-enterprise")
+
+	if !(hasSystem || hasApplyAdmin || hasApplyEnterprise) {
+		restErr := rest_err.NewForbiddenError("you do not have permission to apply permissions")
+		ctx.JSON(restErr.Code, restErr)
+		return
+	}
+
+	if hasApplyEnterprise && !(hasSystem || hasApplyAdmin) {
+		for _, code := range req.Codes {
+			if !mwUtil.HasPermission(identity.Permissions, code) {
+				restErr := rest_err.NewForbiddenError(fmt.Sprintf("cannot apply permission '%s'", code))
+				ctx.JSON(restErr.Code, restErr)
+				return
+			}
+		}
+	}
+
 	err = c.service.ApplyPermissionUserBatch(ctx, req.Email, req.Codes)
 	if err != nil {
 		if strings.Contains(err.Error(), "not found") {
@@ -192,6 +281,25 @@ func (c *permissionControllerImpl) ReadUserPermission(ctx *gin.Context) {
 		restErr := rest_err.NewBadRequestValidationError("invalid request body", []rest_err.Causes{
 			rest_err.NewCause("validation", err.Error()),
 		})
+		ctx.JSON(restErr.Code, restErr)
+		return
+	}
+
+	// 1) Get identity from context (set by AuthMiddleware)
+	identity, rerr := mwUtil.GetIdentity(ctx)
+	if rerr != nil {
+		restErr := rest_err.NewBadRequestValidationError("invalid request body", []rest_err.Causes{
+			rest_err.NewCause("context", rerr.Error()),
+		})
+		ctx.JSON(restErr.Code, restErr)
+		return
+	}
+
+	// 2) Permission checks
+	hasSystem := mwUtil.HasPermission(identity.Permissions, "system")
+	hasRead := mwUtil.HasPermission(identity.Permissions, "read-permission")
+	if !(hasSystem || hasRead) {
+		restErr := rest_err.NewForbiddenError("you do not have permission to read permissions")
 		ctx.JSON(restErr.Code, restErr)
 		return
 	}
@@ -243,6 +351,37 @@ func (c *permissionControllerImpl) RemoveBatch(ctx *gin.Context) {
 		})
 		ctx.JSON(restErr.Code, restErr)
 		return
+	}
+
+	// 1) Get identity from context (set by AuthMiddleware)
+	identity, rerr := mwUtil.GetIdentity(ctx)
+	if rerr != nil {
+		restErr := rest_err.NewBadRequestValidationError("invalid request body", []rest_err.Causes{
+			rest_err.NewCause("context", rerr.Error()),
+		})
+		ctx.JSON(restErr.Code, restErr)
+		return
+	}
+
+	// 2) Permission checks
+	hasSystem := mwUtil.HasPermission(identity.Permissions, "system")
+	hasApplyAdmin := mwUtil.HasPermission(identity.Permissions, "permission-apply-admin")
+	hasApplyEnterprise := mwUtil.HasPermission(identity.Permissions, "permission-apply-enterprise")
+
+	if !(hasSystem || hasApplyAdmin || hasApplyEnterprise) {
+		restErr := rest_err.NewForbiddenError("you do not have permission to remove permissions")
+		ctx.JSON(restErr.Code, restErr)
+		return
+	}
+
+	if hasApplyEnterprise && !(hasSystem || hasApplyAdmin) {
+		for _, code := range codes {
+			if !mwUtil.HasPermission(identity.Permissions, code) {
+				restErr := rest_err.NewForbiddenError(fmt.Sprintf("cannot remove permission '%s'", code))
+				ctx.JSON(restErr.Code, restErr)
+				return
+			}
+		}
 	}
 
 	err = c.service.RemovePermissionsBatch(ctx, email, codes)
