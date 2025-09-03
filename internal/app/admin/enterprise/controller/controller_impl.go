@@ -5,6 +5,7 @@ import (
 	"basic-crud-go/internal/app/admin/enterprise/dto"
 	"basic-crud-go/internal/app/admin/enterprise/service"
 	"basic-crud-go/internal/app/admin/enterprise/util"
+	mwUtil "basic-crud-go/internal/app/admin/middleware/util"
 
 	"basic-crud-go/internal/configuration/rest_err"
 	"github.com/gin-gonic/gin"
@@ -52,6 +53,26 @@ func (c *enterpriseController) CreateEnterpriseHandler(ctx *gin.Context) {
 		return
 	}
 
+	// 1) Get identity from context (set by AuthMiddleware)
+	identity, rerr := mwUtil.GetIdentity(ctx)
+	if rerr != nil {
+		restErr := rest_err.NewBadRequestValidationError("invalid request body", []rest_err.Causes{
+			rest_err.NewCause("context", rerr.Error()),
+		})
+		ctx.JSON(restErr.Code, restErr)
+		return
+	}
+
+	// 2) Permission checks
+	hasSystem := mwUtil.HasPermission(identity.Permissions, "system")
+	hasCreate := mwUtil.HasPermission(identity.Permissions, "create-enterprise")
+
+	if !(hasSystem || hasCreate) {
+		restErr := rest_err.NewForbiddenError("you do not have permission to create enterprises")
+		ctx.JSON(restErr.Code, restErr)
+		return
+	}
+
 	// Create enterprise
 	created, err := c.service.Create(ctx, req.Name, util.RemoveNonDigits(req.Cnpj))
 	if err != nil {
@@ -88,6 +109,26 @@ func (c *enterpriseController) ReadEnterpriseHandler(ctx *gin.Context) {
 		return
 	}
 
+	// 1) Get identity from context (set by AuthMiddleware)
+	identity, rerr := mwUtil.GetIdentity(ctx)
+	if rerr != nil {
+		restErr := rest_err.NewBadRequestValidationError("invalid request body", []rest_err.Causes{
+			rest_err.NewCause("context", rerr.Error()),
+		})
+		ctx.JSON(restErr.Code, restErr)
+		return
+	}
+
+	// 2) Permission checks
+	hasSystem := mwUtil.HasPermission(identity.Permissions, "system")
+	hasRead := mwUtil.HasPermission(identity.Permissions, "read-enterprise")
+
+	if !(hasSystem || hasRead) {
+		restErr := rest_err.NewForbiddenError("you do not have permission to read enterprises")
+		ctx.JSON(restErr.Code, restErr)
+		return
+	}
+
 	// read enterprise
 	enterprise, err := c.service.Read(ctx, util.RemoveNonDigits(req.Cnpj))
 	if err != nil {
@@ -118,13 +159,26 @@ func (c *enterpriseController) ReadEnterpriseHandler(ctx *gin.Context) {
 // @Router       /enterprise/v1/read [get]
 func (c *enterpriseController) ReadEnterprisesHandler(ctx *gin.Context) {
 	req := binding.ValidateReadEnterprisesDTO(ctx)
-	//if err != nil {
-	//	restErr := rest_err.NewBadRequestValidationError("invalid request body", []rest_err.Causes{
-	//		rest_err.NewCause("validation", err.Error()),
-	//	})
-	//	ctx.JSON(restErr.Code, restErr)
-	//	return
-	//}
+
+	// 1) Get identity from context (set by AuthMiddleware)
+	identity, rerr := mwUtil.GetIdentity(ctx)
+	if rerr != nil {
+		restErr := rest_err.NewBadRequestValidationError("invalid request body", []rest_err.Causes{
+			rest_err.NewCause("context", rerr.Error()),
+		})
+		ctx.JSON(restErr.Code, restErr)
+		return
+	}
+
+	// 2) Permission checks
+	hasSystem := mwUtil.HasPermission(identity.Permissions, "system")
+	hasRead := mwUtil.HasPermission(identity.Permissions, "read-enterprise")
+
+	if !(hasSystem || hasRead) {
+		restErr := rest_err.NewForbiddenError("you do not have permission to read enterprises")
+		ctx.JSON(restErr.Code, restErr)
+		return
+	}
 
 	// Fetch enterprises
 	enterprises, err := c.service.ReadAll(ctx, req.Page, req.Limit)
@@ -185,6 +239,27 @@ func (c *enterpriseController) UpdateEnterpriseHandler(ctx *gin.Context) {
 		ctx.JSON(restErr.Code, restErr)
 		return
 	}
+
+	// 1) Get identity from context (set by AuthMiddleware)
+	identity, rerr := mwUtil.GetIdentity(ctx)
+	if rerr != nil {
+		restErr := rest_err.NewBadRequestValidationError("invalid request body", []rest_err.Causes{
+			rest_err.NewCause("context", rerr.Error()),
+		})
+		ctx.JSON(restErr.Code, restErr)
+		return
+	}
+
+	// 2) Permission checks
+	hasSystem := mwUtil.HasPermission(identity.Permissions, "system")
+	hasUpdate := mwUtil.HasPermission(identity.Permissions, "update-enterprise")
+
+	if !(hasSystem || hasUpdate) {
+		restErr := rest_err.NewForbiddenError("you do not have permission to update enterprises")
+		ctx.JSON(restErr.Code, restErr)
+		return
+	}
+
 	// Update enterprise
 	updated, err := c.service.Update(ctx, util.RemoveNonDigits(req.Cnpj), util.RemoveNonDigits(req.NewCnpj), req.NewName)
 	if err != nil {
@@ -227,6 +302,26 @@ func (c *enterpriseController) DeleteEnterpriseHandler(ctx *gin.Context) {
 		restErr := rest_err.NewBadRequestValidationError("invalid request body", []rest_err.Causes{
 			rest_err.NewCause("validation", err.Error()),
 		})
+		ctx.JSON(restErr.Code, restErr)
+		return
+	}
+
+	// 1) Get identity from context (set by AuthMiddleware)
+	identity, rerr := mwUtil.GetIdentity(ctx)
+	if rerr != nil {
+		restErr := rest_err.NewBadRequestValidationError("invalid request body", []rest_err.Causes{
+			rest_err.NewCause("context", rerr.Error()),
+		})
+		ctx.JSON(restErr.Code, restErr)
+		return
+	}
+
+	// 2) Permission checks
+	hasSystem := mwUtil.HasPermission(identity.Permissions, "system")
+	hasDelete := mwUtil.HasPermission(identity.Permissions, "delete-enterprise")
+
+	if !(hasSystem || hasDelete) {
+		restErr := rest_err.NewForbiddenError("you do not have permission to delete enterprises")
 		ctx.JSON(restErr.Code, restErr)
 		return
 	}
